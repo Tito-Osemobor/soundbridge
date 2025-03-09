@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId    String   @id @default(uuid()) // Internal user ID
+  createdAt DateTime @default(now())
+
+  userAuths UserAuth[]
+}
+
+model UserAuth {
+  id             String   @id @default(uuid())
+  userId         String
+  platform       String // "spotify", "apple_music", "youtube_music"
+  platformUserId String   @unique // User ID on the platform
+  accessToken    String
+  refreshToken   String?
+  expiresIn      Int
+  updatedAt      DateTime @default(now()) @updatedAt // Last time the token was updated
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([platformUserId, platform])
+}
