@@ -15,7 +15,7 @@ const spotifyLoginService = () => {
   return `${SPOTIFY_AUTH_URL}?${queryParams}`;
 };
 
-const spotifyCallbackService = async (code) => {
+const spotifyCallbackService = async (code, existingUserId = null) => {
   if (!code) throw new APIError("Authorization code missing", 400);
 
   const body = new URLSearchParams({
@@ -33,7 +33,9 @@ const spotifyCallbackService = async (code) => {
   });
 
   const data = await response.json();
+
   if (data.error) {
+    console.log("❌  Error in YouTube token exchange:", data.error_description);
     throw new APIError(data.error_description || 'Failed to authenticate with Spotify', 400);
   }
 
@@ -52,19 +54,27 @@ const spotifyCallbackService = async (code) => {
   const platformUserId = userProfile.id; // Spotify user ID
 
   // Check if the user already exists in our database
+  let userId = existingUserId;
   let userAuth = await findUserByPlatformUserId('spotify', platformUserId);
 
+
   if (!userAuth) {
-    const newUser = await prisma.user.create({ data: {} });
-    await saveUserAuth(newUser.userId, 'spotify', platformUserId, access_token, refresh_token, expires_in);
+    if (!userId) {
+      console.log("🔹 New user detected. Creating new account...");
+      const newUser = await prisma.user.create({ data: {} });
+      userId = newUser.userId;
+    }
+    await saveUserAuth(userId, 'spotify', platformUserId, access_token, refresh_token, expires_in);
   } else {
+    userId = userAuth.userId;
     await prisma.userAuth.update({
       where: { id: userAuth.id },
       data: { accessToken: access_token, refreshToken: refresh_token, expiresIn: expires_in }
     });
   }
 
-  return { accessToken: access_token };
+  console.log(`🔑 Spotify user ${userId} authenticated`);
+  return userId;
 };
 
 const refreshSpotifyToken = async (userAuth, platformUserId) => {
@@ -95,6 +105,7 @@ const refreshSpotifyToken = async (userAuth, platformUserId) => {
 
   await updateAccessToken(platformUserId, 'spotify', newAccessToken, newExpiresIn);
 
+  console.log("🔄  Successfully refreshed Spotify access token.");
   return newAccessToken;
 };
 
