@@ -1,6 +1,20 @@
-const { findUserByPlatformUserId } = require("../db");
-const { refreshSpotifyToken } = require("./spotifyAuthService");
+const jwt = require('jsonwebtoken');
+const {findUserByPlatformUserId} = require("../db");
+const {refreshSpotifyToken} = require("./spotifyAuthService");
 const {UnauthorizedError, APIError} = require("../../utils/error");
+const {refreshYouTubeToken} = require("./youtubeAuthService");
+
+const generateToken = (userId) => {
+  return jwt.sign({userId}, process.env.JWT_SECRET, {expiresIn: '7d'});
+};
+
+const setAuthCookie = (res, token) => {
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "PROD",
+    sameSite: "Strict",
+  });
+};
 
 const getValidAccessToken = async (platform, platformUserId) => {
   const userAuth = await findUserByPlatformUserId(platform, platformUserId);
@@ -18,6 +32,9 @@ const getValidAccessToken = async (platform, platformUserId) => {
       case 'spotify':
         newAccessToken = await refreshSpotifyToken(userAuth, platformUserId);
         break;
+      case 'youtube_music':
+        newAccessToken = await refreshYouTubeToken(userAuth);
+        break;
       default:
         throw new APIError(`Unsupported platform: ${platform}`, 400);
     }
@@ -33,4 +50,4 @@ const getValidAccessToken = async (platform, platformUserId) => {
   return userAuth.accessToken;
 };
 
-module.exports = { getValidAccessToken };
+module.exports = {generateToken, setAuthCookie, getValidAccessToken};
