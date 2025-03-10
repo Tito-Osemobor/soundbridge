@@ -79,7 +79,7 @@ const youtubeCallbackService = async (code, exisitingUserId = null) => {
   }
 
   console.log(`🔑  YouTube user ${userId} authenticated`);
-  return {userId, accessToken: access_token};
+  return userId;
 };
 
 const refreshYouTubeToken = async (userAuth) => {

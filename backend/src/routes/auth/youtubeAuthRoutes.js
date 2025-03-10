@@ -8,6 +8,5 @@ router.get('/login', youtubeLogin);
 router.get('/callback', youtubeCallback);
 
 router.get('/connect', authenticate, youtubeConnect);
-router.get('/callback', authenticate, youtubeCallback);
 
 module.exports = router;

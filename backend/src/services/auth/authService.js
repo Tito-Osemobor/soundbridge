@@ -16,6 +16,15 @@ const setAuthCookie = (res, token) => {
   });
 };
 
+const setSessionCookie = (res, sessionId) => {
+  res.cookie("sessionId", sessionId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "PROD",
+    sameSite: "Lax",
+    maxAge: 10 * 60 * 1000, // 10 minutes
+  });
+}
+
 const getValidAccessToken = async (platform, platformUserId) => {
   const userAuth = await findUserByPlatformUserId(platform, platformUserId);
   if (!userAuth) throw new UnauthorizedError('User authentication not found');
@@ -50,4 +59,4 @@ const getValidAccessToken = async (platform, platformUserId) => {
   return userAuth.accessToken;
 };
 
-module.exports = {generateToken, setAuthCookie, getValidAccessToken};
+module.exports = {generateToken, setAuthCookie, setSessionCookie, getValidAccessToken};

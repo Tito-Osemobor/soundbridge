@@ -10,6 +10,5 @@ router.get('/callback', spotifyCallback);
 
 // 🔹 Connect Spotify Account to User
 router.get('/connect', authenticate, spotifyConnect);
-router.get('/callback', authenticate, spotifyCallback);
 
 module.exports = router;
