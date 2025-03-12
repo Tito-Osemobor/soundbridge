@@ -1,8 +1,11 @@
 require('dotenv').config();
-const { prisma, saveUserAuth, findUserByPlatformUserId, updateAccessToken } = require('../../services/db');
+const {prisma, saveUserAuth, findUserByPlatformUserId, updateAccessToken} = require('../../services/db');
 const querystring = require('querystring');
-const { SPOTIFY_AUTH_URL, SPOTIFY_TOKEN_URL, SPOTIFY_SCOPES, SPOTIFY_API_BASE_URL } = require('../../config/spotifyConfig');
-const { APIError, UnauthorizedError } = require("../../utils/error");
+const {
+  SPOTIFY_AUTH_URL, SPOTIFY_TOKEN_URL, SPOTIFY_SCOPES, SPOTIFY_API_BASE_URL
+} = require('../../config/spotifyConfig');
+const {APIError, UnauthorizedError} = require("../../utils/error");
+const {Platform} = require("@prisma/client");
 
 const spotifyLoginService = () => {
   const queryParams = querystring.stringify({
@@ -10,6 +13,7 @@ const spotifyLoginService = () => {
     client_id: process.env.SPOTIFY_CLIENT_ID,
     scope: SPOTIFY_SCOPES,
     redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
+    state: 'connect'
   });
 
   return `${SPOTIFY_AUTH_URL}?${queryParams}`;
@@ -27,23 +31,21 @@ const spotifyCallbackService = async (code, existingUserId = null) => {
   });
 
   const response = await fetch(SPOTIFY_TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
+    method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body,
   });
 
   const data = await response.json();
 
   if (data.error) {
-    console.log("❌  Error in YouTube token exchange:", data.error_description);
+    console.log("❌  Error in Spotify token exchange:", data.error_description);
     throw new APIError(data.error_description || 'Failed to authenticate with Spotify', 400);
   }
 
-  const { access_token, refresh_token, expires_in } = data;
+  const {access_token, refresh_token, expires_in} = data;
 
   // Fetch the user's Spotify profile
   const userProfileResponse = await fetch(`${SPOTIFY_API_BASE_URL}/me`, {  // 🔹 Fixed incorrect API URL
-    headers: { Authorization: `Bearer ${access_token}` }
+    headers: {Authorization: `Bearer ${access_token}`}
   });
 
   const userProfile = await userProfileResponse.json();
@@ -55,25 +57,29 @@ const spotifyCallbackService = async (code, existingUserId = null) => {
 
   // Check if the user already exists in our database
   let userId = existingUserId;
-  let userAuth = await findUserByPlatformUserId('spotify', platformUserId);
-
+  let userAuth = await findUserByPlatformUserId(Platform.SPOTIFY, platformUserId);
 
   if (!userAuth) {
     if (!userId) {
-      console.log("🔹 New user detected. Creating new account...");
-      const newUser = await prisma.user.create({ data: {} });
-      userId = newUser.userId;
+      throw new APIError("User must be logged in to connect Spotify", 401);
     }
-    await saveUserAuth(userId, 'spotify', platformUserId, access_token, refresh_token, expires_in);
+    console.log("🔹 Linking new Spotify account...");
+    await saveUserAuth(userId, Platform.SPOTIFY, platformUserId, access_token, refresh_token, expires_in);
   } else {
     userId = userAuth.userId;
+    const updateData = {
+      accessToken: access_token, expiresIn: expires_in,
+    };
+    if (refresh_token) {
+      updateData.refreshToken = refresh_token;
+    }
+
     await prisma.userAuth.update({
-      where: { id: userAuth.id },
-      data: { accessToken: access_token, refreshToken: refresh_token, expiresIn: expires_in }
+      where: {id: userAuth.id}, data: updateData,
     });
   }
 
-  console.log(`🔑 Spotify user ${userId} authenticated`);
+  console.log(`🔑 Spotify user authenticated`);
   return userId;
 };
 
@@ -90,9 +96,7 @@ const refreshSpotifyToken = async (userAuth, platformUserId) => {
   });
 
   const response = await fetch(SPOTIFY_TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
+    method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body,
   });
 
   const data = await response.json();
@@ -103,10 +107,10 @@ const refreshSpotifyToken = async (userAuth, platformUserId) => {
   const newAccessToken = data.access_token;
   const newExpiresIn = data.expires_in;
 
-  await updateAccessToken(platformUserId, 'spotify', newAccessToken, newExpiresIn);
+  await updateAccessToken(platformUserId, Platform.SPOTIFY, newAccessToken, newExpiresIn);
 
   console.log("🔄  Successfully refreshed Spotify access token.");
   return newAccessToken;
 };
 
-module.exports = { spotifyLoginService, spotifyCallbackService, refreshSpotifyToken };
+module.exports = {spotifyLoginService, spotifyCallbackService, refreshSpotifyToken};
