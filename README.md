@@ -6,9 +6,13 @@
 
 ## ✨ Features
 ✅ **Connect Multiple Streaming Services** (Spotify, YouTube Music, and more coming soon)
+
 ✅ **Fetch and Display Playlists** from supported platforms
+
 ✅ **Select and Transfer Playlists** seamlessly
+
 ✅ **Fuzzy Matching for Track Identification** (coming soon)
+
 ✅ **Secure OAuth Authentication**
 
 ## 🛠️ Tech Stack
