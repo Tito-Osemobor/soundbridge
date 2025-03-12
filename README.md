@@ -59,7 +59,7 @@ DATABASE_URL=your_database_url
 JWT_SECRET=your_jwt_secret
 ```
 
-Create a `.env.local` file in the backend root directory and add:
+Create a `.env.local` file in the frontend root directory and add:
 ```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
 ```
