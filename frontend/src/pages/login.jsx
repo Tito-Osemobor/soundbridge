@@ -1,7 +1,6 @@
 import {useState} from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
 import {useAuth} from "@/context/AuthContext";
 import Button from "@/components/Button";
 import Input from "@/components/Input";

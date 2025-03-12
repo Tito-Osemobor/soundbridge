@@ -7,7 +7,7 @@ const Navbar = () => {
   const {user, logout} = useAuth();
   const router = useRouter();
 
-  const handleLogout = async (e) => {
+  const handleLogout = async () => {
     const response = await logout();
     if (response.success) {
       await router.replace("/");

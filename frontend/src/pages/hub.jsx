@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import ConnectServiceModal from "@/components/ConnectServiceModal";
 import { fetchSpotifyPlaylists } from "@/services/spotifyService";
-import { FaSpotify } from "react-icons/fa";
 import PlaylistTable from "@/components/PlaylistTable";
 import {SUPPORTED_SERVICES} from "@/constants/services";
 

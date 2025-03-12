@@ -16,9 +16,7 @@ export const connectSpotify = async () => {
 
   try {
     const response = await api.get(`${BASE_SPOTIFY_AUTH_URL}/connect`);
-    const authUrl = response.data.redirectUrl;
-
-    authWindow.location.href = authUrl;
+    authWindow.location.href = response.data.redirectUrl;
   } catch (error) {
     console.error("Error connecting Spotify:", error);
     authWindow.close();

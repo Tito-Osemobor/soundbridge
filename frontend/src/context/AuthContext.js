@@ -2,14 +2,12 @@ import {createContext, useContext, useState, useEffect} from "react";
 import {connectSpotify} from "@/services/auth/spotifyAuthService";
 import {connectYoutubeMusic} from "@/services/auth/youtubeAuthService";
 import {fetchUser, logoutUser, loginUser, registerUser} from "@/services/auth/authService";
-import {useRouter} from "next/router";
 import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
