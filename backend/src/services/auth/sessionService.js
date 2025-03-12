@@ -1,16 +1,16 @@
-const { prisma } = require("../../services/db");
+const {prisma} = require("../../services/db");
 const crypto = require("crypto");
 
 // 🔹 Generate a random session ID
 const generateSessionId = () => crypto.randomBytes(32).toString("hex");
 
 // 🔹 Save session to database with expiration
-const saveTemporarySession = async (sessionId, userId, provider, ipAddress, userAgent) => {
+const saveTemporarySession = async (sessionId, userId, platform, ipAddress, userAgent) => {
   return prisma.session.create({
     data: {
       sessionId,
       userId,
-      provider,
+      platform,
       ipAddress,
       userAgent,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 🔹 Expires in 10 minutes
