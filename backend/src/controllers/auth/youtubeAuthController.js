@@ -5,7 +5,7 @@ const {
   deleteSession,
   getSessionFromDatabase
 } = require("../../services/auth/sessionService");
-const {setSessionCookie, generateToken, setAuthCookie} = require("../../services/auth/authService");
+const {setSessionCookie} = require("../../services/auth/authService");
 const {Platform} = require("@prisma/client");
 const {prisma} = require("../../services/db");
 
