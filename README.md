@@ -39,6 +39,12 @@ cd soundbridge
 
 ### 2️⃣ **Install Dependencies**
 ```bash
+cd backend
+npm install
+```
+
+```bash
+cd frontend
 npm install
 ```
 
