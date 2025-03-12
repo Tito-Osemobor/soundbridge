@@ -1,8 +1,11 @@
 const express = require('express');
-const {getUserPlaylists} = require("../controllers/spotifyController");
+const {getUserPlaylists, getPlaylistTracks} = require("../controllers/spotifyController");
+const authenticate = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get('/playlists', getUserPlaylists);
+router.get('/playlists', authenticate, getUserPlaylists);
+router.get("/playlists/tracks", authenticate, getPlaylistTracks);
+
 
 module.exports = router;
