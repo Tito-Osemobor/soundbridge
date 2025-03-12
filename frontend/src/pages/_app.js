@@ -1,6 +1,6 @@
-import {Inter} from "@next/font/google"; // Global styles
+import {Inter} from "next/font/google"; // Global styles
 import "@/globals.css";
-// import { AuthProvider } from "@/context/AuthContext"; // Global Auth State
+import {AuthProvider} from "@/context/AuthContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -9,10 +9,10 @@ const inter = Inter({
 
 export default function MyApp({ Component, pageProps }) {
   return (
-    // <AuthProvider>
-      <div className={inter.className}>
+    <AuthProvider>
+      <div className={`bg-grid min-h-screen ${inter.className}`}>
         <Component {...pageProps} />
       </div>
-    // </AuthProvider>
+    </AuthProvider>
   );
 }
