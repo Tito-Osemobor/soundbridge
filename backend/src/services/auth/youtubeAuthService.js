@@ -7,6 +7,7 @@ const {
   YOUTUBE_API_BASE_URL,
   YOUTUBE_SCOPE
 } = require('../../config/youtubeConfig');
+const {Platform} = require("@prisma/client");
 
 const youtubeLoginService = () => {
   const queryParams = new URLSearchParams({
@@ -15,12 +16,13 @@ const youtubeLoginService = () => {
     redirect_uri: process.env.YOUTUBE_REDIRECT_URI,
     scope: YOUTUBE_SCOPE,
     access_type: 'offline',
+    prompt: 'consent',
   });
 
   return `${YOUTUBE_AUTH_URL}?${queryParams}`;
 };
 
-const youtubeCallbackService = async (code, exisitingUserId = null) => {
+const youtubeCallbackService = async (code, existingUserId) => {
   if (!code) throw new APIError("Authorization code missing", 400);
 
   const body = new URLSearchParams({
@@ -57,29 +59,24 @@ const youtubeCallbackService = async (code, exisitingUserId = null) => {
 
   const platformUserId = userProfile.items[0].id;
 
-  // Check if user already exists
-  let userId = exisitingUserId;
-  let userAuth = await findUserByPlatformUserId('youtube_music', platformUserId);
+  // Check if user is already linked
+  let userAuth = await findUserByPlatformUserId(Platform.YOUTUBE_MUSIC, platformUserId);
 
   if (!userAuth) {
-    if (!userId) {
-      console.log("🔹  New user detected. Creating new account...");
-      // Create new user first
-      const newUser = await prisma.user.create({data: {}});
-      userId = newUser.userId;
-    }
-    // Save authentication details
-    await saveUserAuth(userId, 'youtube_music', platformUserId, access_token, refresh_token, expires_in);
+    if (!existingUserId) throw new APIError("User must be logged in to connect YouTube", 401);
+
+    console.log("🔹 Linking new YouTube account...");
+    await saveUserAuth(existingUserId, Platform.YOUTUBE_MUSIC, platformUserId, access_token, refresh_token, expires_in);
   } else {
-    userId = userAuth.userId;
-    await prisma.userAuth.update({
-      where: {id: userAuth.id},
-      data: {accessToken: access_token, refreshToken: refresh_token, expiresIn: expires_in}
-    });
+    console.log("🔹 Updating existing YouTube authentication...");
+    const updateData = {accessToken: access_token, expiresIn: expires_in};
+    if (refresh_token) updateData.refreshToken = refresh_token;
+
+    await prisma.userAuth.update({where: {id: userAuth.id}, data: updateData});
   }
 
-  console.log(`🔑  YouTube user ${userId} authenticated`);
-  return userId;
+  console.log("✅ YouTube account connected successfully.");
+  return existingUserId;
 };
 
 const refreshYouTubeToken = async (userAuth) => {
@@ -94,7 +91,7 @@ const refreshYouTubeToken = async (userAuth) => {
     client_secret: process.env.YOUTUBE_CLIENT_SECRET,
   });
 
-  const response = await fetch(process.env.YOUTUBE_TOKEN_URL, {
+  const response = await fetch(YOUTUBE_TOKEN_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     body,
@@ -108,7 +105,7 @@ const refreshYouTubeToken = async (userAuth) => {
   const newAccessToken = data.access_token;
   const newExpiresIn = data.expires_in;
 
-  await updateAccessToken(platformUserId, 'youtube_music', newAccessToken, newExpiresIn);
+  await updateAccessToken(userAuth.platformUserId, Platform.YOUTUBE_MUSIC, newAccessToken, newExpiresIn);
 
   console.log("🔄  Successfully refreshed YouTube access token.");
   return newAccessToken;
