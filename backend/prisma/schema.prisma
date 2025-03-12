@@ -15,6 +15,8 @@ datasource db {
 
 model User {
   userId    String   @id @default(uuid()) // Internal user ID
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
 
   userAuths UserAuth[]
@@ -24,7 +26,7 @@ model User {
 model UserAuth {
   id             String   @id @default(uuid())
   userId         String
-  platform       String // "spotify", "apple_music", "youtube_music"
+  platform       Platform // "spotify", "apple_music", "youtube_music"
   platformUserId String   @unique // User ID on the platform
   accessToken    String
   refreshToken   String?
@@ -40,11 +42,17 @@ model Session {
   id        String   @id @default(uuid())
   sessionId String   @unique
   userId    String
-  provider  String
+  platform  Platform
   ipAddress String? // 🔹 Store the user's IP address
   userAgent String? // 🔹 Store the user's browser/device info
   expiresAt DateTime
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+enum Platform {
+  SPOTIFY
+  APPLE_MUSIC
+  YOUTUBE_MUSIC
 }
