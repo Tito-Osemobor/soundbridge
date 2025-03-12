@@ -8,6 +8,7 @@ const spotifyAuthRoutes = require('./src/routes/auth/spotifyAuthRoutes');
 const spotifyRoutes = require('./src/routes/spotifyRoutes');
 const appleAuthRoutes = require('./src/routes/auth/appleAuthRoutes');
 const youtubeAuthRoutes = require('./src/routes/auth/youtubeAuthRoutes');
+const transferRoutes = require('./src/routes/transferRoutes');
 
 const {errorHandler} = require("./src/middleware/errorHandler");
 
@@ -19,8 +20,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(
   {
-    origin: process.env.CLIENT_URL,
-    credentials: true
+    origin: process.env.FRONTEND_DEV_URL,
+    credentials: true,
   }
 ));
 
@@ -30,6 +31,7 @@ app.use('/auth/spotify', spotifyAuthRoutes);
 app.use('/auth/apple', appleAuthRoutes);
 app.use('/auth/youtube', youtubeAuthRoutes);
 app.use('/api/spotify', spotifyRoutes);
+app.use('/api/transfer', transferRoutes);
 
 // Test Route
 app.get('/', (req, res) => {
