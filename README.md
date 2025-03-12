@@ -1,6 +1,5 @@
-# 🎵 SoundBridge - Seamless Playlist Transfers Across Music Platforms
-
-<img src="./assets/homepage.png" alt="SoundBridge Homepage" height="400" width="600"/>
+# 🎵 SoundBridge
+<img src="./assets/homepage.png" alt="SoundBridge Homepage"/>
 
 ## 📌 Overview
 **SoundBridge** is a web application that allows users to **transfer playlists** between streaming services like **Spotify** and **YouTube Music**. Whether you're switching platforms or just syncing playlists, SoundBridge makes the process effortless.
