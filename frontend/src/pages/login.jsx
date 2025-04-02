@@ -5,6 +5,7 @@ import {useAuth} from "@/context/AuthContext";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import {useRouter} from "next/router";
+import withPublic from "@/hoc/withPublic";
 
 const Login = () => {
   const {login} = useAuth();
@@ -68,4 +69,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withPublic(Login);
