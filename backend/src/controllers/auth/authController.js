@@ -5,7 +5,6 @@ const {
   setAuthCookie,
   fetchUserProfile
 } = require("../../services/auth/authService");
-const {BadRequestError} = require("../../utils/error");
 
 const register = async (req, res, next) => {
   try {
@@ -14,7 +13,7 @@ const register = async (req, res, next) => {
     const {email, password, reEnterPassword} = req.body;
     if (password !== reEnterPassword) {
       console.warn("⚠️ Passwords do not match.");
-      throw new BadRequestError("Passwords do not match");
+      return res.status(200).json({ success: false, message: "Passwords do not match" });
     }
 
     const user = await registerUser(email, password);
