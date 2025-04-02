@@ -48,7 +48,7 @@ const verifyUserCredentials = async (email, password) => {
   });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    throw new BadRequestError("Invalid credentials");
+    return null
   }
 
   // ✅ Remove password before returning user object
