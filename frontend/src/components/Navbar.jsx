@@ -23,7 +23,7 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className={`flex items-center gap-4`}>
-          {user ? (
+          {user && router.pathname === "/hub" ? (
             <Button onClick={handleLogout} className="text-black hover:underline">Logout</Button>
           ) : (
             <>
