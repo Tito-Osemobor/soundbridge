@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npx prisma generate && node src/app.js",
     "dev": "npx prisma generate && nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "studio": "npx prisma studio"
   },
   "keywords": [],
   "author": "",
