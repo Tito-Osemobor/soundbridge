@@ -26,7 +26,7 @@ const register = async (req, res, next) => {
     setAuthCookie(res, token);
     console.log("🍪 Token set in cookie.");
 
-    res.json({
+    res.status(200).json({
       success: true,
       user
     });
@@ -44,13 +44,18 @@ const login = async (req, res, next) => {
     const user = await verifyUserCredentials(email, password);
     console.log("✅ User verified:", user);
 
+    if (!user) {
+      console.warn("⚠️ Invalid login attempt.");
+      return res.status(200).json({ success: false, message: "Invalid email or password" }); // ✅ Return JSON instead of throwing
+    }
+
     const token = generateToken(user.userId);
     console.log("🔑 Generated token:", token);
 
     setAuthCookie(res, token);
     console.log("🍪 Token set in cookie.");
 
-    res.json({
+    res.status(200).json({
       success: true,
       user
     });
@@ -85,7 +90,7 @@ const getUserProfile = async (req, res, next) => {
     const userId = req.user?.userId;
     if (!userId) {
       console.warn("⚠️ Unauthorized request - No user ID found.");
-      return res.status(401).json({success: false, message: "Unauthorized"});
+      return res.status(200).json(null); // ✅ Return null instead of 401
     }
 
     const userProfile = await fetchUserProfile(userId);
