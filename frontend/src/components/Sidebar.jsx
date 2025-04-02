@@ -1,21 +1,15 @@
-import {SUPPORTED_SERVICES} from "@/constants/services";
 import {FaPlus} from "react-icons/fa";
 import Button from "@/components/Button";
 import ConnectIcon from "@/components/ConnectIcon";
 import {useAuth} from "@/context/AuthContext";
 import {useState} from "react";
 import api from "@/services/api";
+import PropTypes from "prop-types";
 
-const Sidebar = ({onOpenModal, selectedPlaylist}) => {
+const Sidebar = ({connectedPlatforms, availablePlatforms, onOpenModal, selectedPlaylist}) => {
   const {user} = useAuth();
   const [isTransferModalOpen, setTransferModalOpen] = useState(false);
 
-  const connectedServiceIds = user?.platformsConnected?.map(service => service.id) || [];
-  const connectedServices = SUPPORTED_SERVICES.filter(service => connectedServiceIds.includes(service.id));
-
-  const availableServices = SUPPORTED_SERVICES.filter(
-    (service) => !user?.platformsConnected?.some((s) => s.id === service.id)
-  );
   const handleTransfer = async () => {
     if (!selectedPlaylist) return;
 
@@ -40,12 +34,17 @@ const Sidebar = ({onOpenModal, selectedPlaylist}) => {
       <div
         className="flex flex-col justify-between h-full bg-gray-900 text-white p-4 border border-gray-300 bg-white rounded-lg">
         <ul className="flex flex-col gap-4">
-          {connectedServices.map((service) => (
+          {connectedPlatforms.map((service) => (
             <li key={service.id} className="">
-              <ConnectIcon icon={service.icon} isConnected={true} name={service.name}/>
+              <ConnectIcon
+                icon={service.icon}
+                isConnected={service.status === "connected"}
+                isPending={service.status === "pending"}
+                name={service.name}
+              />
             </li>
           ))}
-          {availableServices.length > 0 && (
+          {availablePlatforms.length > 0 && (
             <Button
               className="w-[98px] h-[125px] flex flex-col justify-center items-center bg-gray-50 border border-gray-500 text-white p-2 rounded-2xl cursor-pointer gap-1.5"
               onClick={onOpenModal}>
@@ -79,5 +78,22 @@ const Sidebar = ({onOpenModal, selectedPlaylist}) => {
     </div>
   );
 }
+
+Sidebar.propTypes = {
+  connectedPlatforms: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      icon: PropTypes.func.isRequired,
+      status: PropTypes.string,
+    })
+  ).isRequired,
+  availablePlatforms: PropTypes.array.isRequired,
+  onOpenModal: PropTypes.func.isRequired,
+  selectedPlaylist: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+  }),
+};
 
 export default Sidebar;
