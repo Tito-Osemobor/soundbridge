@@ -1,5 +1,5 @@
 require('dotenv').config();
-const {prisma, saveUserAuth, findUserByPlatformUserId, updateAccessToken} = require('../../services/db');
+const {saveUserAuth, updateAccessToken} = require('../../services/db');
 const querystring = require('querystring');
 const {
   SPOTIFY_AUTH_URL, SPOTIFY_TOKEN_URL, SPOTIFY_SCOPES, SPOTIFY_API_BASE_URL
@@ -57,27 +57,12 @@ const spotifyCallbackService = async (code, existingUserId = null) => {
 
   // Check if the user already exists in our database
   let userId = existingUserId;
-  let userAuth = await findUserByPlatformUserId(Platform.SPOTIFY, platformUserId);
 
-  if (!userAuth) {
-    if (!userId) {
-      throw new APIError("User must be logged in to connect Spotify", 401);
-    }
-    console.log("🔹 Linking new Spotify account...");
-    await saveUserAuth(userId, Platform.SPOTIFY, platformUserId, access_token, refresh_token, expires_in);
-  } else {
-    userId = userAuth.userId;
-    const updateData = {
-      accessToken: access_token, expiresIn: expires_in,
-    };
-    if (refresh_token) {
-      updateData.refreshToken = refresh_token;
-    }
-
-    await prisma.userAuth.update({
-      where: {id: userAuth.id}, data: updateData,
-    });
+  if (!existingUserId) {
+    throw new APIError("User must be logged in to connect Spotify", 401);
   }
+  console.log("🔹 Linking new Spotify account...");
+  await saveUserAuth(userId, Platform.SPOTIFY, platformUserId, access_token, refresh_token, expires_in);
 
   console.log(`🔑 Spotify user authenticated`);
   return userId;
