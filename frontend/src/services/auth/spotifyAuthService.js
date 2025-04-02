@@ -29,7 +29,6 @@ export const connectSpotify = async () => {
     const checkPopupClosed = setInterval(() => {
       if (authWindow.closed) {
         clearInterval(checkPopupClosed);
-        window.location.reload();
       }
     }, 500);
   } catch (error) {
