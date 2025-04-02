@@ -5,6 +5,7 @@ import {useAuth} from "@/context/AuthContext";
 import {useState} from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
+import {SOURCES} from "@/constants/sources";
 
 const Sidebar = ({connectedPlatforms, availablePlatforms, onOpenModal, selectedPlaylist}) => {
   const {user} = useAuth();
@@ -41,6 +42,7 @@ const Sidebar = ({connectedPlatforms, availablePlatforms, onOpenModal, selectedP
                 isConnected={service.status === "connected"}
                 isPending={service.status === "pending"}
                 name={service.name}
+                source={SOURCES.SIDEBAR}
               />
             </li>
           ))}
