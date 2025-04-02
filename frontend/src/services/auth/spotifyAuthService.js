@@ -16,16 +16,24 @@ export const connectSpotify = async () => {
 
   try {
     const response = await api.get(`${BASE_SPOTIFY_AUTH_URL}/connect`);
-    authWindow.location.href = response.data.redirectUrl;
+    const authUrl = response.data.redirectUrl;
+
+    if (!authUrl) {
+      console.error("Error: No redirect URL received.");
+      authWindow.close();
+      return;
+    }
+
+    authWindow.location.href = authUrl;
+
+    const checkPopupClosed = setInterval(() => {
+      if (authWindow.closed) {
+        clearInterval(checkPopupClosed);
+        window.location.reload();
+      }
+    }, 500);
   } catch (error) {
     console.error("Error connecting Spotify:", error);
     authWindow.close();
   }
-
-  const checkPopupClosed = setInterval(() => {
-    if (authWindow.closed) {
-      clearInterval(checkPopupClosed);
-      window.location.reload();
-    }
-  }, 500);
 };
