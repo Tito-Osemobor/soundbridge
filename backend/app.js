@@ -4,11 +4,10 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./src/routes/auth/authRoutes');
-const spotifyAuthRoutes = require('./src/routes/auth/spotifyAuthRoutes');
 const spotifyRoutes = require('./src/routes/spotifyRoutes');
-const appleAuthRoutes = require('./src/routes/auth/appleAuthRoutes');
-const youtubeAuthRoutes = require('./src/routes/auth/youtubeAuthRoutes');
+const connectRoutes = require('./src/routes/auth/connectRoutes');
 const transferRoutes = require('./src/routes/transferRoutes');
+
 
 const {errorHandler} = require("./src/middleware/errorHandler");
 
@@ -27,9 +26,7 @@ app.use(cors(
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/auth/spotify', spotifyAuthRoutes);
-app.use('/auth/apple', appleAuthRoutes);
-app.use('/auth/youtube', youtubeAuthRoutes);
+app.use('/auth/connect', connectRoutes);
 app.use('/api/spotify', spotifyRoutes);
 app.use('/api/transfer', transferRoutes);
 
