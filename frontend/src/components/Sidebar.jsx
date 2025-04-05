@@ -1,15 +1,19 @@
 import {FaPlus} from "react-icons/fa";
 import Button from "@/components/Button";
-import ConnectIcon from "@/components/ConnectIcon";
+import PlatformIcon from "@/components/PlatformIcon";
 import {useAuth} from "@/context/AuthContext";
 import {useState} from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
-import {SOURCES} from "@/constants/sources";
+import {selectAvailablePlatforms, selectConnectedPlatforms} from "@/store/platformSlice";
+import {useSelector} from "react-redux";
 
-const Sidebar = ({connectedPlatforms, availablePlatforms, onOpenModal, selectedPlaylist}) => {
+const Sidebar = ({onOpenModal, selectedPlaylist}) => {
   const {user} = useAuth();
   const [isTransferModalOpen, setTransferModalOpen] = useState(false);
+
+  const connectedPlatforms = useSelector(selectConnectedPlatforms);
+  const availablePlatforms = useSelector(selectAvailablePlatforms);
 
   const handleTransfer = async () => {
     if (!selectedPlaylist) return;
@@ -29,20 +33,17 @@ const Sidebar = ({connectedPlatforms, availablePlatforms, onOpenModal, selectedP
     }
   };
 
-
   return (
-    <div className={`p-4 w-fit`}>
+    <div className={``}>
       <div
-        className="flex flex-col justify-between h-full bg-gray-900 text-white p-4 border border-gray-300 bg-white rounded-lg">
+        className="flex flex-col justify-between h-full bg-gray-900 text-white p-4 border border-b-0 border-gray-300 bg-white rounded-t-lg">
         <ul className="flex flex-col gap-4">
           {connectedPlatforms.map((service) => (
             <li key={service.id} className="">
-              <ConnectIcon
-                icon={service.icon}
+              <PlatformIcon
+                service={service}
                 isConnected={service.status === "connected"}
                 isPending={service.status === "pending"}
-                name={service.name}
-                source={SOURCES.SIDEBAR}
               />
             </li>
           ))}
@@ -82,15 +83,6 @@ const Sidebar = ({connectedPlatforms, availablePlatforms, onOpenModal, selectedP
 }
 
 Sidebar.propTypes = {
-  connectedPlatforms: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      icon: PropTypes.func.isRequired,
-      status: PropTypes.string,
-    })
-  ).isRequired,
-  availablePlatforms: PropTypes.array.isRequired,
   onOpenModal: PropTypes.func.isRequired,
   selectedPlaylist: PropTypes.shape({
     id: PropTypes.string,
