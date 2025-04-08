@@ -15,9 +15,9 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full pt-3 text-center select-none">
+    <nav className="w-full pt-3 select-none">
       <div
-        className={`flex justify-between items-center p-4 text-white border border-gray-300 bg-white rounded-lg max-w-[600px] mx-auto`}>
+        className={`flex justify-between items-center h-16 p-4 border border-gray-300 bg-white rounded-lg max-w-[600px] mx-auto`}>
         {/* Logo/Brand */}
         <Link href={"/"}><h1 className="text-xl text-black">SoundBridge</h1></Link>
 
