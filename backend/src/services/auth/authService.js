@@ -114,7 +114,7 @@ const formatUserProfile = (userId, email, userAuths) => {
     platformsConnected: userAuths.map(auth => ({
       id: auth.platform,
       platformUserId: auth.platformUserId,
-      connectedAt: auth.updatedAt
+      connectedAt: auth.createdAt
     })),
   };
 };
@@ -128,7 +128,7 @@ const fetchUserProfile = async (userId) => {
         select: {
           platform: true,
           platformUserId: true,
-          updatedAt: true
+          createdAt: true
         }
       }
     }

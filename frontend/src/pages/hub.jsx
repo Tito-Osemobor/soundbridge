@@ -1,86 +1,69 @@
+import {useEffect, useRef, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {setConnectedPlatforms} from "@/store/platformSlice";
+import {fetchPlaylistsForPlatform, selectPlaylistsByPlatform} from "@/store/playlistsSlice";
 import Navbar from "@/components/Navbar";
-import {useAuth} from "@/context/AuthContext";
-import Sidebar from "@/components/Sidebar";
-import Footer from "@/components/Footer";
-import {useEffect, useMemo, useState} from "react";
-import ConnectServiceModal from "@/components/modals/ConnectServiceModal";
+import AvailablePlatformsModal from "@/components/modals/AvailablePlatformsModal";
 import PlaylistTable from "@/components/PlaylistTable";
-import {getPlatformById, SUPPORTED_PLATFORMS} from "@/constants/services";
-import {loadUserPlaylists} from "@/services/utils/playlists";
+import Sidebar from "@/components/Sidebar";
+import {useAuth} from "@/context/AuthContext";
+import {useHubState} from "@/hooks/useHubState";
 import withLoader from "@/hoc/withLoader";
 import withAuth from "@/hoc/withAuth";
 
 const Hub = () => {
   const {user} = useAuth();
-  const [playlists, setPlaylists] = useState([]);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
-  const [pendingConnections, setPendingConnections] = useState([]);
+  const dispatch = useDispatch();
+  const playlistsByPlatform = useSelector(selectPlaylistsByPlatform);
 
-  const connectedPlatforms = useMemo(() => {
-    const realConnections = user?.platformsConnected?.map(platform => ({
-      ...getPlatformById(platform.id),
-      status: "connected"
-    })) || [];
+  const {
+    selectedPlaylist,
+    setSelectedPlaylist,
+    isModalOpen,
+    openModal,
+    closeModal,
+    connectToPlatform,
+  } = useHubState(user);
+  const [filteredPlatformId, setFilteredPlatformId] = useState(null);
 
-    const pendingMapped = pendingConnections.map(platformId => ({
-      ...getPlatformById(platformId),
-      status: "pending"
-    }));
-
-    return [...realConnections, ...pendingMapped];
-  }, [user?.platformsConnected, pendingConnections]);
-
-  const availablePlatforms = useMemo(() => {
-    return Array.from(SUPPORTED_PLATFORMS.keys())
-      .filter(id => !connectedPlatforms.some(p => p.id === id)) // 🔄 use `connectedPlatforms` directly
-      .map(getPlatformById)
-      .filter(Boolean);
-  }, [connectedPlatforms]);
-
-  const handlePlatformConnectClick = (platformId) => {
-    console.log("Pending connections before:", pendingConnections);
-    setPendingConnections(prev => {
-      const updated = [...prev, platformId];
-      console.log("Pending connections after:", updated);
-      return updated;
-    });
-  };
+  const loadedPlatformIds = useRef(new Set());
 
   useEffect(() => {
-    const loadPlaylists = async () => {
-      if (!user || !user.platformsConnected?.length) return;
+    if (user?.platformsConnected?.length) {
+      dispatch(setConnectedPlatforms(user.platformsConnected));
 
-      const curPlatform = user.platformsConnected[0];
-      console.log("curPlatform:", curPlatform);
-      if (!curPlatform) return;
-
-      const curPlatformPlaylists = await loadUserPlaylists(curPlatform.id, curPlatform.platformUserId);
-      setPlaylists(curPlatformPlaylists);
-    };
-    loadPlaylists();
-  }, [user]);
+      user.platformsConnected.forEach(({id, platformUserId}) => {
+        if (!loadedPlatformIds.current.has(id)) {
+          dispatch(fetchPlaylistsForPlatform({platformId: id, platformUserId}));
+          loadedPlatformIds.current.add(id);
+        }
+      });
+    }
+  }, [user?.platformsConnected]);
 
   if (!user) return null;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen select-none cursor-default">
       <Navbar/>
-      <div className="flex flex-grow">
-        <div className={`flex flex-grow relative gap-4`}>
-          <Sidebar onOpenModal={() => setModalOpen(true)} selectedPlaylist={selectedPlaylist}
-                   connectedPlatforms={connectedPlatforms} availablePlatforms={availablePlatforms}/>
-          {isModalOpen &&
-            <ConnectServiceModal
-              onClose={() => setModalOpen(false)}
-              availableServices={availablePlatforms}
-              onPlatformClick={handlePlatformConnectClick}
-            />}
+      <div className=" flex flex-grow overflow-hidden relative gap-4 px-4 pt-4 max-h-[calc(100vh - 4rem)]">
+        <Sidebar
+          onOpenModal={openModal}
+          selectedPlaylist={selectedPlaylist}
+          onSelectPlatform={setFilteredPlatformId}
+        />
+        {isModalOpen && (
+          <AvailablePlatformsModal
+            onClose={closeModal}
+            onPlatformClick={connectToPlatform}
+          />
+        )}
 
-          <PlaylistTable playlists={playlists} onSelect={setSelectedPlaylist}/>
-        </div>
+        <PlaylistTable
+          platformId={filteredPlatformId}
+          onSelect={setSelectedPlaylist}
+        />
       </div>
-      <Footer/>
     </div>
   );
 };

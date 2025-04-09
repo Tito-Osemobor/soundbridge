@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {connectSpotify} from "@/services/auth/spotifyAuthService";
-import {connectYoutubeMusic} from "@/services/auth/youtubeAuthService";
+import {connectService} from "@/services/auth/connectService";
 import {fetchUser, loginUser, logoutUser, registerUser} from "@/services/auth/authService";
+import {OAuthError, UserFetchFailedError} from "@/utils/errors";
 
 const AuthContext = createContext();
 
@@ -31,28 +31,53 @@ export const AuthProvider = ({children}) => {
   }, []);
 
 
-  // ✅ Updated connect function to ensure OAuth completes before fetching user
-  const connect = async (provider) => {
+  // ✅ Updated connect function to call connectService
+  const connect = async (platformId) => {
     try {
-      switch (provider) {
-        case "Spotify":
-          await connectSpotify();
-          break;
-        case "YouTube Music":
-          await connectYoutubeMusic();
-          break;
-        default:
-          console.error("Unknown provider:", provider);
-          return;
+      await connectService(platformId);
+
+      const userData = await fetchUser();
+      if (!userData) {
+        console.warn("User data not returned after connecting platform.");
+        throw new UserFetchFailedError(platformId);
       }
 
-      // ✅ Fetch user profile after connecting a new service
-      const userData = await fetchUser();
-      if (userData) setUser(userData);
-      console.log("🔗 Connected to", provider);
-      console.log("👤 User data:", userData);
+      setUser(userData);
+      return { success: true, user: userData };
     } catch (error) {
-      console.error("Connection failed:", error);
+      if (error instanceof OAuthError && ["USER_CLOSED", "PLATFORM_REJECTED", "TIMEOUT", "POPUP_BLOCKED"].includes(error.type)) {
+        console.warn(`[AuthContext] OAuth connection ended early for ${platformId}:`, error.message);
+      } else {
+        console.error("[AuthContext] Unexpected error during platform connection:", error);
+      }
+
+      try {
+        if (error instanceof OAuthError) {
+          return {
+            success: false,
+            errorType: error.type,
+            platformId: error.platformId,
+            message: error.message,
+          };
+        }
+
+        // Catch-all for unexpected errors
+        return {
+          success: false,
+          errorType: "UNKNOWN",
+          platformId,
+          message: error?.message || "An unknown error occurred.",
+        };
+      } catch (dispatchError) {
+        console.error("Failed to remove pending connection:", dispatchError);
+
+        return {
+          success: false,
+          errorType: "DISPATCH_ERROR",
+          platformId,
+          message: "Error dispatching pending connection cleanup.",
+        };
+      }
     }
   };
 
@@ -70,6 +95,7 @@ export const AuthProvider = ({children}) => {
       return {success: false, message: "An unexpected error occurred"};
     }
   };
+
   // ✅ Register function
   const register = async (email, password, reEnterPassword) => {
     try {
