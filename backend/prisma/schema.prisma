@@ -31,6 +31,7 @@ model UserAuth {
   accessToken    String
   refreshToken   String?
   expiresIn      Int
+  createdAt      DateTime @default(now()) // Time when the token was created
   updatedAt      DateTime @default(now()) @updatedAt // Last time the token was updated
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
