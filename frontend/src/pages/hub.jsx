@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {setConnectedPlatforms} from "@/store/platformSlice";
-import {fetchPlaylistsForPlatform, selectPlaylistsByPlatform} from "@/store/playlistsSlice";
+import {fetchPlaylistsForPlatform} from "@/store/playlistsSlice";
 import Navbar from "@/components/Navbar";
 import AvailablePlatformsModal from "@/components/modals/AvailablePlatformsModal";
 import PlaylistTable from "@/components/PlaylistTable";
@@ -14,7 +14,6 @@ import withAuth from "@/hoc/withAuth";
 const Hub = () => {
   const {user} = useAuth();
   const dispatch = useDispatch();
-  const playlistsByPlatform = useSelector(selectPlaylistsByPlatform);
 
   const {
     selectedPlaylist,
