@@ -29,7 +29,7 @@ const platformSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(resetApp, (state) => initialState) // ✅ reset state when app resets
+      .addCase(resetApp, () => initialState) // ✅ reset state when app resets
   }
 });
 
