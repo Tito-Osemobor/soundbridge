@@ -1,12 +1,12 @@
-const {
+import {
   registerUser,
   verifyUserCredentials,
   generateToken,
   setAuthCookie,
   fetchUserProfile
-} = require("../../services/auth/authService");
+} from "../../services/auth/authService.js";
 
-const register = async (req, res, next) => {
+export const register = async (req, res, next) => {
   try {
     console.log("📝 Registering user...");
 
@@ -35,7 +35,7 @@ const register = async (req, res, next) => {
   }
 };
 
-const login = async (req, res, next) => {
+export const login = async (req, res, next) => {
   try {
     console.log("🔐 Logging in user...");
 
@@ -64,7 +64,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const logout = (req, res) => {
+export const logout = (req, res) => {
   try {
     console.log("🚪 Logging out user...");
 
@@ -82,7 +82,7 @@ const logout = (req, res) => {
   }
 };
 
-const getUserProfile = async (req, res, next) => {
+export const getUserProfile = async (req, res, next) => {
   try {
     console.log("👤 Fetching user profile...");
 
@@ -101,5 +101,3 @@ const getUserProfile = async (req, res, next) => {
     next(error);
   }
 };
-
-module.exports = {register, login, logout, getUserProfile};

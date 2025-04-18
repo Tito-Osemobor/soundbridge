@@ -1,9 +1,9 @@
-const express = require("express");
-const {transferPlaylist} = require("../controllers/transferController");
-const authenticate = require("../middleware/authMiddleware");
+import express from "express";
+import {transferPlaylist} from "../controllers/transferController.js";
+import authenticate from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/playlist", authenticate, transferPlaylist);
 
-module.exports = router;
+export default router;
