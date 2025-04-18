@@ -20,7 +20,6 @@ model User {
   createdAt DateTime @default(now())
 
   userAuths UserAuth[]
-  sessions  Session[]
 }
 
 model UserAuth {
@@ -37,19 +36,6 @@ model UserAuth {
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([platformUserId, platform])
-}
-
-model Session {
-  id        String   @id @default(uuid())
-  sessionId String   @unique
-  userId    String
-  platform  Platform
-  ipAddress String? // 🔹 Store the user's IP address
-  userAgent String? // 🔹 Store the user's browser/device info
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 enum Platform {
