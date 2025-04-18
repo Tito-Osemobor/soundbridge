@@ -39,7 +39,7 @@ export const openBlankPopup = (platformId) => {
 
 export const waitForOAuthResult = (popup, platformId) => {
   return new Promise((resolve, reject) => {
-    const timeoutDuration = 30000;
+    const timeoutDuration = 10 * 60 * 1000;
 
     const cleanup = () => {
       clearTimeout(timeout);
