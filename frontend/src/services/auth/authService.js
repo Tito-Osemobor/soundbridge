@@ -1,8 +1,9 @@
 import api from "@/services/api";
+import {API_ENDPOINTS} from "@/constants/endpoints";
 
 export const fetchUser = async () => {
   try {
-    const response = await api.get("/auth/me");
+    const response = await api.get(API_ENDPOINTS.AUTH.ME);
 
     if (response.status !== 200) {
       console.warn("User not authenticated");
@@ -18,7 +19,7 @@ export const fetchUser = async () => {
 
 export const logoutUser = async () => {
   try {
-    const response = await api.post("/auth/logout");
+    const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT);
     if (response.status !== 200) {
       throw new Error("Failed to log out");
     }
@@ -31,7 +32,7 @@ export const logoutUser = async () => {
 
 export const registerUser = async (email, password, reEnterPassword) => {
   try {
-    const response = await api.post("/auth/register", {
+    const response = await api.post( API_ENDPOINTS.AUTH.REGISTER, {
       email,
       password,
       reEnterPassword
@@ -50,7 +51,7 @@ export const registerUser = async (email, password, reEnterPassword) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await api.post("/auth/login", { email, password });
+    const response = await api.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
 
     if (response.status !== 200) {
       return { success: false, message: response.data?.message || "Login failed" }; // ✅ Handle error response
