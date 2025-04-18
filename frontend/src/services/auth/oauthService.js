@@ -5,14 +5,16 @@ import {
   OAuthError,
   UnknownOAuthError,
 } from "@/utils/errors";
+import {API_ENDPOINTS} from "@/constants/endpoints";
 
-export const connectService = async (platformId) => {
+export const oauthService = async (platformId) => {
   const popup = openBlankPopup(platformId);
 
   try {
-    const response = await api.post(`/auth/connect?platformId=${platformId}`);
-    const authUrl = response.data.redirectUrl;
-
+    const response = await api.post(`${API_ENDPOINTS.OAUTH.CONNECT}?platformId=${platformId}`);
+    console.log(`${API_ENDPOINTS.OAUTH.CONNECT}?platformId=${platformId}`)
+    const authUrl = response.data.oauthRedirectUrl;
+    console.log(`authUrl`, authUrl);
     if (!authUrl) {
       popup.close();
       throw new NoAuthUrlError(platformId);
