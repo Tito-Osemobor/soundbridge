@@ -1,13 +1,16 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {connectService} from "@/services/auth/connectService";
+import {oauthService} from "@/services/auth/oauthService";
 import {fetchUser, loginUser, logoutUser, registerUser} from "@/services/auth/authService";
 import {OAuthError, UserFetchFailedError} from "@/utils/errors";
+import {resetApp} from "@/store/globalActions";
+import {useDispatch} from "react-redux";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -31,10 +34,10 @@ export const AuthProvider = ({children}) => {
   }, []);
 
 
-  // ✅ Updated connect function to call connectService
+  // ✅ Updated connect function to call oauthService
   const connect = async (platformId) => {
     try {
-      await connectService(platformId);
+      await oauthService(platformId);
 
       const userData = await fetchUser();
       if (!userData) {
@@ -116,6 +119,7 @@ export const AuthProvider = ({children}) => {
   const logout = async () => {
     try {
       const response = await logoutUser();
+      dispatch(resetApp());
       setUser(null); // ✅ Always clear user state
 
       if (!response.success) {
