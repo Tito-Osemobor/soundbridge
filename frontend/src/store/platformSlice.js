@@ -1,5 +1,6 @@
 import {createSelector, createSlice} from '@reduxjs/toolkit';
 import {getPlatformById, SUPPORTED_PLATFORMS} from '@/constants/services';
+import {resetApp} from "@/store/globalActions";
 
 const initialState = {
   connected: [], // [{ id: 'spotify', platformUserId: '...' }]
@@ -26,6 +27,10 @@ const platformSlice = createSlice({
       state.pending = state.pending.filter(id => id !== action.payload);
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(resetApp, (state) => initialState) // ✅ reset state when app resets
+  }
 });
 
 // ✅ Actions you can dispatch from components

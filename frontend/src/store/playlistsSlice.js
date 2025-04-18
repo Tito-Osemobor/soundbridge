@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {loadUserPlaylists} from "@/services/playlists";
+import {resetApp} from "@/store/globalActions";
 
 const initialState = {
   byPlatform: {},
@@ -52,7 +53,8 @@ const playlistsSlice = createSlice({
       .addCase(fetchPlaylistsForPlatform.rejected, (state, action) => {
         state.error = action.error.message;
         state.loading = false;
-      });
+      })
+      .addCase(resetApp, () => initialState);
   },
 });
 
