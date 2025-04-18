@@ -1,19 +1,21 @@
-const {transferPlaylistService} = require("../services/transferService");
+import {transferPlaylistService} from "../services/transferService.js";
 
-const transferPlaylist = async (req, res, next) => {
+export const transferPlaylist = async (req, res, next) => {
   try {
     const {spotifyUserId, youtubeUserId, playlistId, playlistName} = req.body;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({success: false, message: "Unauthorized"});
+    }
 
     if (!spotifyUserId || !youtubeUserId || !playlistId) {
       return res.status(400).json({success: false, message: "Missing required parameters."});
     }
 
-    const result = await transferPlaylistService(spotifyUserId, youtubeUserId, playlistId, playlistName);
-
+    const result = await transferPlaylistService(userId, spotifyUserId, youtubeUserId, playlistId, playlistName);
     res.json(result);
   } catch (error) {
     next(error);
   }
 };
-
-module.exports = {transferPlaylist};
