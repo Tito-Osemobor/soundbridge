@@ -1,15 +1,15 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
-const authRoutes = require('./src/routes/auth/authRoutes');
-const spotifyRoutes = require('./src/routes/spotifyRoutes');
-const connectRoutes = require('./src/routes/auth/connectRoutes');
-const transferRoutes = require('./src/routes/transferRoutes');
+import authRoutes from './src/routes/auth/authRoutes.js';
+import oauthRoutes from './src/routes/auth/oauthRoutes.js';
+import spotifyRoutes from './src/routes/spotifyRoutes.js';
+import transferRoutes from './src/routes/transferRoutes.js';
 
 
-const {errorHandler} = require("./src/middleware/errorHandler");
+import {errorHandler} from './src/middleware/errorHandler.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -26,7 +26,7 @@ app.use(cors(
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/auth/connect', connectRoutes);
+app.use('/oauth', oauthRoutes);
 app.use('/api/spotify', spotifyRoutes);
 app.use('/api/transfer', transferRoutes);
 
@@ -39,5 +39,5 @@ app.use(errorHandler)
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`✅  Server is running on port ${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });
