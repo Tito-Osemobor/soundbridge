@@ -1,14 +1,41 @@
-const {getValidAccessToken} = require("./auth/authService");
-const {YOUTUBE_API_BASE_URL} = require("../config/youtubeConfig");
-const {BadRequestError, UnauthorizedError, APIError} = require("../utils/error");
-const {Platform} = require("@prisma/client");
+import {getValidAccessToken} from '../../auth/oauthService.js';
+import {YOUTUBE_API_BASE_URL, YOUTUBE_TOKEN_URL} from '../../../config/youtubeConfig.js';
+import {APIError, BadRequestError, UnauthorizedError} from '../../../utils/error.js';
+import {Platform} from '@prisma/client';
+import 'dotenv/config';
 
-const createYouTubePlaylist = async (platformUserId, playlistName) => {
+const getYoutubeMusicAccessToken = async (userId, platformUserId) => {
+  return await getValidAccessToken({
+    userId,
+    platform: Platform.YOUTUBE_MUSIC,
+    platformUserId,
+    refreshConfig: {
+      clientId: process.env.YOUTUBE_CLIENT_ID,
+      clientSecret: process.env.YOUTUBE_CLIENT_SECRET,
+      tokenUrl: YOUTUBE_TOKEN_URL
+    }
+  });
+}
+
+export const fetchYoutubeMusicProfile = async (accessToken) => {
+  const userProfileResponse = await fetch(`${YOUTUBE_API_BASE_URL}/channels?part=id&mine=true`, {
+    headers: {Authorization: `Bearer ${accessToken}`}
+  });
+
+  const userProfile = await userProfileResponse.json();
+  if (!userProfile.items || userProfile.items.length === 0) {
+    throw new APIError("Failed to fetch user profile from YouTube", 400);
+  }
+  return userProfile.items[0];
+}
+
+export const createYouTubePlaylist = async (userId, platformUserId, playlistName) => {
   if (!platformUserId) {
     throw new BadRequestError("platformUserId is missing in createYouTubePlaylist");
   }
 
-  const accessToken = await getValidAccessToken(Platform.YOUTUBE_MUSIC, platformUserId);
+  const accessToken = await getYoutubeMusicAccessToken(userId, platformUserId);
+
   if (!accessToken) {
     throw new UnauthorizedError("Failed to retrieve a valid access token");
   }
@@ -34,12 +61,13 @@ const createYouTubePlaylist = async (platformUserId, playlistName) => {
   return data.id;
 };
 
-const searchYouTubeMusic = async (platformUserId, query) => {
+export const searchYouTubeMusic = async (userId, platformUserId, query) => {
   if (!platformUserId) {
     throw new BadRequestError("platformUserId is missing in searchYouTubeMusic");
   }
 
-  const accessToken = await getValidAccessToken(Platform.YOUTUBE_MUSIC, platformUserId);
+  const accessToken = await getYoutubeMusicAccessToken(userId, platformUserId);
+
   if (!accessToken) {
     throw new UnauthorizedError("Failed to retrieve a valid access token");
   }
@@ -57,12 +85,12 @@ const searchYouTubeMusic = async (platformUserId, query) => {
   return data.items.length > 0 ? data.items[0].id.videoId : null;
 };
 
-const addToYouTubePlaylist = async (platformUserId, playlistId, trackIds) => {
+export const addToYouTubePlaylist = async (userId, platformUserId, playlistId, trackIds) => {
   if (!platformUserId) {
     throw new BadRequestError("platformUserId is missing in addToYouTubePlaylist");
   }
 
-  const accessToken = await getValidAccessToken(Platform.YOUTUBE_MUSIC, platformUserId);
+  const accessToken = await getYoutubeMusicAccessToken(userId, platformUserId);
   if (!accessToken) {
     throw new UnauthorizedError("Failed to retrieve a valid access token");
   }
@@ -87,5 +115,3 @@ const addToYouTubePlaylist = async (platformUserId, playlistId, trackIds) => {
 
   return {success: true, message: "Tracks added successfully"};
 };
-
-module.exports = {searchYouTubeMusic, createYouTubePlaylist, addToYouTubePlaylist};
