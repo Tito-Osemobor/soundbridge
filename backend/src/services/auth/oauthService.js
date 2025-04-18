@@ -1,11 +1,12 @@
 import {APIError, NotFoundError} from "../../utils/error.js";
 import {findUserByPlatformUserId, updateAccessToken} from "../db.js";
 import jwt from "jsonwebtoken";
+import {JWT_SECRET} from "../../config/applicationConfig.js";
 
 export const generateOAuthStateToken = ({ userId, platform }, expiresIn = "10m") => {
   return jwt.sign(
     { userId, platform },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn }
   );
 };

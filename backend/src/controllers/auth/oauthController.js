@@ -6,6 +6,7 @@ import {
 } from "../../services/platforms/youtubeMusic/youtubeAuthService.js";
 import {generateOAuthStateToken} from "../../services/auth/oauthService.js";
 import jwt from "jsonwebtoken";
+import {FRONTEND_URL, JWT_SECRET} from "../../config/applicationConfig.js";
 
 export const handlePlatformConnect = async (req, res, next) => {
   const platformId = req.query.platformId;
@@ -50,7 +51,7 @@ export const handlePlatformCallback = async (req, res, next) => {
   }
 
   try {
-    const decodedState = jwt.verify(state, process.env.JWT_SECRET);
+    const decodedState = jwt.verify(state, JWT_SECRET);
     console.log('decodedState', decodedState);
     const userId = decodedState.userId;
 
@@ -69,9 +70,9 @@ export const handlePlatformCallback = async (req, res, next) => {
     }
 
     console.log(`✅ ${platformId} connected successfully.`);
-    return res.redirect(`${process.env.FRONTEND_DEV_URL}/oauth?platformId=${platformId}&success=true`);
+    return res.redirect(`${FRONTEND_URL}/oauth?platformId=${platformId}&success=true`);
   } catch (error) {
     console.error("OAuth callback failed:", error);
-    return res.redirect(`${process.env.FRONTEND_DEV_URL}/oauth?platformId=${platformId || "unknown"}&success=false&error=${encodeURIComponent(error.message)}`);
+    return res.redirect(`${FRONTEND_URL}/oauth?platformId=${platformId || "unknown"}&success=false&error=${encodeURIComponent(error.message)}`);
   }
 };

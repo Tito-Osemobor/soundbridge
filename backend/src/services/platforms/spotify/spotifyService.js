@@ -1,4 +1,9 @@
-import {SPOTIFY_API_BASE_URL, SPOTIFY_TOKEN_URL} from '../../../config/spotifyConfig.js';
+import {
+  SPOTIFY_API_BASE_URL,
+  SPOTIFY_CLIENT_ID,
+  SPOTIFY_CLIENT_SECRET,
+  SPOTIFY_TOKEN_URL
+} from '../../../config/spotifyConfig.js';
 import {APIError, UnauthorizedError} from '../../../utils/error.js';
 import {Platform} from '@prisma/client';
 import {getValidAccessToken} from '../../auth/oauthService.js';
@@ -10,8 +15,8 @@ const getSpotifyAccessToken = async (userId, platformUserId) => {
     platform: Platform.SPOTIFY,
     platformUserId,
     refreshConfig: {
-      clientId: process.env.SPOTIFY_CLIENT_ID,
-      clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+      clientId: SPOTIFY_CLIENT_ID,
+      clientSecret: SPOTIFY_CLIENT_SECRET,
       tokenUrl: SPOTIFY_TOKEN_URL
     }
   });

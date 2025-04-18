@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import {JWT_SECRET} from "../config/applicationConfig.js";
 
 const authenticate = (req, res, next) => {
   const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
@@ -13,7 +14,7 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = jwt.verify(token, JWT_SECRET);
     next();
   } catch (error) {
     console.warn("⚠️ Invalid token:", error.message);

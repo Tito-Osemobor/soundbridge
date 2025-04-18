@@ -1,18 +1,19 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import {prisma} from "../db.js";
+import {JWT_SECRET, NODE_ENV} from "../../config/applicationConfig.js";
 
 export const generateToken = (userId, expiresIn = "7d") => {
   return jwt.sign(
     {userId},
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     {expiresIn: expiresIn}
 )};
 
 export const setAuthCookie = (res, token) => {
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "PROD",
+    secure: NODE_ENV === "production",
     sameSite: "Strict",
   });
 };

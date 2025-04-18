@@ -3,23 +3,23 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+import {FRONTEND_URL, PORT} from "./src/config/applicationConfig.js";
+import {errorHandler} from './src/middleware/errorHandler.js';
+
 import authRoutes from './src/routes/auth/authRoutes.js';
 import oauthRoutes from './src/routes/auth/oauthRoutes.js';
 import spotifyRoutes from './src/routes/spotifyRoutes.js';
 import transferRoutes from './src/routes/transferRoutes.js';
 
 
-import {errorHandler} from './src/middleware/errorHandler.js';
-
 const app = express();
-const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(
   {
-    origin: process.env.FRONTEND_DEV_URL,
+    origin: FRONTEND_URL,
     credentials: true,
   }
 ));

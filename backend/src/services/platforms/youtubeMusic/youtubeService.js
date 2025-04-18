@@ -1,8 +1,15 @@
-import {getValidAccessToken} from '../../auth/oauthService.js';
-import {YOUTUBE_API_BASE_URL, YOUTUBE_TOKEN_URL} from '../../../config/youtubeConfig.js';
-import {APIError, BadRequestError, UnauthorizedError} from '../../../utils/error.js';
-import {Platform} from '@prisma/client';
 import 'dotenv/config';
+import {Platform} from '@prisma/client';
+
+import {
+  YOUTUBE_API_BASE_URL,
+  YOUTUBE_CLIENT_ID,
+  YOUTUBE_CLIENT_SECRET,
+  YOUTUBE_TOKEN_URL
+} from '../../../config/youtubeConfig.js';
+import {APIError, BadRequestError, UnauthorizedError} from '../../../utils/error.js';
+
+import {getValidAccessToken} from '../../auth/oauthService.js';
 
 const getYoutubeMusicAccessToken = async (userId, platformUserId) => {
   return await getValidAccessToken({
@@ -10,8 +17,8 @@ const getYoutubeMusicAccessToken = async (userId, platformUserId) => {
     platform: Platform.YOUTUBE_MUSIC,
     platformUserId,
     refreshConfig: {
-      clientId: process.env.YOUTUBE_CLIENT_ID,
-      clientSecret: process.env.YOUTUBE_CLIENT_SECRET,
+      clientId: YOUTUBE_CLIENT_ID,
+      clientSecret: YOUTUBE_CLIENT_SECRET,
       tokenUrl: YOUTUBE_TOKEN_URL
     }
   });

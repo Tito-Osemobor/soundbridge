@@ -5,6 +5,7 @@ import {
   setAuthCookie,
   fetchUserProfile
 } from "../../services/auth/authService.js";
+import {NODE_ENV} from "../../config/applicationConfig.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -70,7 +71,7 @@ export const logout = (req, res) => {
 
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "PROD",
+      secure: NODE_ENV === "production",
       sameSite: "Strict",
     });
 
