@@ -26,7 +26,7 @@ model UserAuth {
   id             String   @id @default(uuid())
   userId         String
   platform       Platform // "spotify", "apple_music", "youtube_music"
-  platformUserId String   @unique // User ID on the platform
+  platformUserId String
   accessToken    String
   refreshToken   String?
   expiresIn      Int
@@ -35,7 +35,7 @@ model UserAuth {
 
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  @@unique([platformUserId, platform])
+  @@unique([userId, platformUserId, platform])
 }
 
 enum Platform {
