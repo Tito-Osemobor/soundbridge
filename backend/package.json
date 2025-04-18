@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "app.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start": "npx prisma generate && node src/app.js",
     "dev": "npx prisma generate && nodemon src/app.js",
