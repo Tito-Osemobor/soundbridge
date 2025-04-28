@@ -6,8 +6,8 @@ import cookieParser from 'cookie-parser';
 import {FRONTEND_URL, PORT} from "./src/config/applicationConfig.js";
 import {errorHandler} from './src/middleware/errorHandler.js';
 
-import authRoutes from './src/routes/auth/authRoutes.js';
-import oauthRoutes from './src/routes/auth/oauthRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
+import oauthRoutes from './src/routes/oauthRoutes.js';
 import spotifyRoutes from './src/routes/spotifyRoutes.js';
 import transferRoutes from './src/routes/transferRoutes.js';
 

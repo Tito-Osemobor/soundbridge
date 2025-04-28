@@ -2,14 +2,14 @@ import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const saveUserAuth = async (userId, platform, platformUserId, accessToken, refreshToken, expiresIn) => {
+const saveUserAuth = async (userId, platformId, platformUserId, accessToken, refreshToken, expiresIn) => {
   try {
     await prisma.userAuth.upsert({
       where: {
-        userId_platformUserId_platform: {
+        userId_platformUserId_platformId: {
           userId,
           platformUserId,
-          platform
+          platformId
         }
       },
       update: {
@@ -19,7 +19,7 @@ const saveUserAuth = async (userId, platform, platformUserId, accessToken, refre
       },
       create: {
         userId,
-        platform,
+        platformId,
         platformUserId,
         accessToken,
         refreshToken,
@@ -27,30 +27,30 @@ const saveUserAuth = async (userId, platform, platformUserId, accessToken, refre
       }
     });
   } catch (error) {
-    console.error(`❌  Error saving user tokens for ${platform}:`, error);
+    console.error(`❌  Error saving user tokens for ${platformId}:`, error);
   }
 };
 
-const findUserByPlatformUserId = async (userId, platform, platformUserId) => {
+const findUserByPlatformUserId = async (userId, platformId, platformUserId) => {
   return prisma.userAuth.findUnique({
     where: {
-      userId_platformUserId_platform: {
+      userId_platformUserId_platformId: {
         userId,
         platformUserId,
-        platform
+        platformId
       }
     }
   });
 };
 
-const updateAccessToken = async (userId, platformUserId, platform, newAccessToken, newExpiresIn) => {
+const updateAccessToken = async (userId, platformUserId, platformId, newAccessToken, newExpiresIn) => {
   try {
     await prisma.userAuth.update({
       where: {
-        userId_platformUserId_platform: {
+        userId_platformUserId_platformId: {
           userId,
           platformUserId,
-          platform
+          platformId
         }
       },
       data: {
@@ -59,7 +59,7 @@ const updateAccessToken = async (userId, platformUserId, platform, newAccessToke
         updatedAt: new Date()
       }
     });
-    console.log(`✅  Access token updated for ${platform} user ${platformUserId}`);
+    console.log(`✅  Access token updated for ${platformId} user ${platformUserId}`);
   } catch (error) {
     console.error(`❌  Error updating access token for ${platformUserId}:`, error);
   }

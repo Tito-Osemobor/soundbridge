@@ -14,7 +14,7 @@ import {getValidAccessToken} from '../../auth/oauthService.js';
 const getYoutubeMusicAccessToken = async (userId, platformUserId) => {
   return await getValidAccessToken({
     userId,
-    platform: Platform.YOUTUBE_MUSIC,
+    platformId: Platform.YOUTUBE_MUSIC,
     platformUserId,
     refreshConfig: {
       clientId: YOUTUBE_CLIENT_ID,

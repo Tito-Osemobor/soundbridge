@@ -4,8 +4,8 @@ import {
   generateToken,
   setAuthCookie,
   fetchUserProfile
-} from "../../services/auth/authService.js";
-import {NODE_ENV} from "../../config/applicationConfig.js";
+} from "../services/auth/authService.js";
+import {NODE_ENV} from "../config/applicationConfig.js";
 
 export const register = async (req, res, next) => {
   try {

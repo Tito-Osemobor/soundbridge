@@ -12,7 +12,7 @@ import 'dotenv/config';
 const getSpotifyAccessToken = async (userId, platformUserId) => {
   return await getValidAccessToken({
     userId,
-    platform: Platform.SPOTIFY,
+    platformId: Platform.SPOTIFY,
     platformUserId,
     refreshConfig: {
       clientId: SPOTIFY_CLIENT_ID,

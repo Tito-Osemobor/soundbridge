@@ -28,7 +28,7 @@ export const registerUser = async (email, password) => {
       createdAt: true,
       userAuths: {
         select: {
-          platform: true,
+          platformId: true,
           platformUserId: true,
           updatedAt: true
         }
@@ -47,7 +47,7 @@ export const verifyUserCredentials = async (email, password) => {
       password: true, // We still need to retrieve this to compare it
       userAuths: {
         select: {
-          platform: true,
+          platformId: true,
           platformUserId: true,
           updatedAt: true
         }
@@ -71,7 +71,7 @@ export const fetchUserProfile = async (userId) => {
       email: true,
       userAuths: {
         select: {
-          platform: true,
+          platformId: true,
           platformUserId: true,
           createdAt: true
         }
@@ -92,7 +92,7 @@ const formatUserProfile = (userId, email, userAuths) => {
     userId,
     email,
     platformsConnected: userAuths.map(auth => ({
-      id: auth.platform,
+      id: auth.platformId,
       platformUserId: auth.platformUserId,
       connectedAt: auth.createdAt
     })),
