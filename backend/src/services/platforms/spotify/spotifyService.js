@@ -1,3 +1,4 @@
+import {Platform} from '@prisma/client';
 import {
   SPOTIFY_API_BASE_URL,
   SPOTIFY_CLIENT_ID,
@@ -5,7 +6,6 @@ import {
   SPOTIFY_TOKEN_URL
 } from '../../../config/spotifyConfig.js';
 import {APIError, UnauthorizedError} from '../../../utils/error.js';
-import {Platform} from '@prisma/client';
 import {getValidAccessToken} from '../../oauthService.js';
 
 const getSpotifyAccessToken = async (userId, platformUserId) => {
