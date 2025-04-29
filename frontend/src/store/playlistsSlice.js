@@ -10,8 +10,8 @@ const initialState = {
 
 export const fetchPlaylistsForPlatform = createAsyncThunk(
   'playlists/fetchForPlatform',
-  async ({platformId, platformUserId}) => {
-    const playlists = await loadUserPlaylists(platformId, platformUserId);
+  async ({platformId}) => {
+    const playlists = await loadUserPlaylists(platformId);
     return {platformId, playlists};
   }
 )

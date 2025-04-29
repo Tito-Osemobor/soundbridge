@@ -31,9 +31,9 @@ const Hub = () => {
     if (user?.platformsConnected?.length) {
       dispatch(setConnectedPlatforms(user.platformsConnected));
 
-      user.platformsConnected.forEach(({id, platformUserId}) => {
+      user.platformsConnected.forEach(({id}) => {
         if (!loadedPlatformIds.current.has(id)) {
-          dispatch(fetchPlaylistsForPlatform({platformId: id, platformUserId}));
+          dispatch(fetchPlaylistsForPlatform({platformId: id}));
           loadedPlatformIds.current.add(id);
         }
       });
