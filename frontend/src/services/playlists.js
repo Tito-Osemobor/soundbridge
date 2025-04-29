@@ -1,20 +1,16 @@
-import {fetchSpotifyPlaylists} from "@/services/spotifyService";
-// import {fetchYouTubePlaylists} from "@/services/youtubeService";
-import {PLATFORM_IDS} from "@/constants/services"; // Ensure this exists
+import api from "@/services/api";
+import {API_ENDPOINTS} from "@/constants/endpoints"; // Ensure this exists
 
-export const loadUserPlaylists = async (platformId, platformUserId) => {
+export const loadUserPlaylists = async (platformId) => {
   try {
-    switch (platformId) {
-      case PLATFORM_IDS.SPOTIFY:
-        return await fetchSpotifyPlaylists(platformUserId);
-      // case SUPPORTED_PLATFORMS.YOUTUBE_MUSIC.id:
-      //   return await fetchYouTubePlaylists(platformUserId);
-      default:
-        console.warn("Unsupported platform:", platformId);
-        return [];
-    }
+    const response = await api.get(`${API_ENDPOINTS.PLATFORM.PLAYLISTS}?platformId=${platformId}`);
+    return response.data?.playlists ?? []; // ✅ flatten here
   } catch (error) {
-    console.error(`Error loading playlists from ${platformId}:`, error);
-    return [];
+    const message =
+      error?.response?.data?.message || "Failed to load playlists.";
+    console.warn(`⚠️ Failed to load playlists for ${platformId}: ${message}`);
+
+    // Let Redux know what happened
+    throw new Error(message);
   }
 };
