@@ -8,7 +8,7 @@ import {errorHandler} from './src/middleware/errorHandler.js';
 
 import authRoutes from './src/routes/authRoutes.js';
 import oauthRoutes from './src/routes/oauthRoutes.js';
-import spotifyRoutes from './src/routes/spotifyRoutes.js';
+import playlistRoutes from './src/routes/playlistRoutes.js';
 import transferRoutes from './src/routes/transferRoutes.js';
 
 
@@ -27,7 +27,7 @@ app.use(cors(
 // Routes
 app.use('/auth', authRoutes);
 app.use('/oauth', oauthRoutes);
-app.use('/api/spotify', spotifyRoutes);
+app.use('/api/playlists', playlistRoutes);
 app.use('/api/transfer', transferRoutes);
 
 // Test Route
