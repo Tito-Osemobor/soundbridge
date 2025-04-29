@@ -6,7 +6,7 @@ import {
 } from '../../../config/spotifyConfig.js';
 import {APIError, UnauthorizedError} from '../../../utils/error.js';
 import {Platform} from '@prisma/client';
-import {getValidAccessToken} from '../../auth/oauthService.js';
+import {getValidAccessToken} from '../../oauthService.js';
 import 'dotenv/config';
 
 const getSpotifyAccessToken = async (userId, platformUserId) => {
@@ -34,7 +34,7 @@ export const fetchSpotifyProfile = async (accessToken) => {
   return userProfile;
 }
 
-export const fetchUserPlaylists = async (userId, platformUserId) => {
+export const fetchSpotifyPlaylists = async (userId, platformUserId) => {
   const accessToken = await getSpotifyAccessToken(userId, platformUserId);
   if (!accessToken) {
     throw new UnauthorizedError("Failed to retrieve a valid access token");
@@ -52,7 +52,8 @@ export const fetchUserPlaylists = async (userId, platformUserId) => {
   return data.items.map(playlist => ({
     id: playlist.id,
     name: playlist.name,
-    trackCount: playlist.tracks.total
+    trackCount: playlist.tracks.total,
+    creator: playlist.owner.display_name,
   }));
 };
 
