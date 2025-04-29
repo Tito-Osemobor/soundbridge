@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {saveUserAuth} from '../../db.js';
 import {APIError} from '../../../utils/error.js';
 import {

@@ -7,7 +7,6 @@ import {
 import {APIError, UnauthorizedError} from '../../../utils/error.js';
 import {Platform} from '@prisma/client';
 import {getValidAccessToken} from '../../oauthService.js';
-import 'dotenv/config';
 
 const getSpotifyAccessToken = async (userId, platformUserId) => {
   return await getValidAccessToken({

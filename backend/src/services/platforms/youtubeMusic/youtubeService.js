@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {Platform} from '@prisma/client';
 
 import {

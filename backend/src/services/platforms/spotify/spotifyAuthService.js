@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {saveUserAuth} from '../../db.js';
 import {
   SPOTIFY_AUTH_URL,
