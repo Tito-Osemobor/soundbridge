@@ -44,7 +44,7 @@ const PlaylistTable = ({platformIds = [], searchQuery = "", onSelect}) => {
           <tr className="">
             <th className="w-10 px-4 py-2"></th>
             <th className="px-4 py-2 text-left">Title</th>
-            <th className="px-4 py-2 text-left">Service</th>
+            <th className="px-4 py-2 text-center">Service</th>
             <th className="px-4 py-2 text-center">Tracks</th>
             <th className="px-4 py-2 text-center">Creator</th>
           </tr>
@@ -73,8 +73,8 @@ const PlaylistTable = ({platformIds = [], searchQuery = "", onSelect}) => {
                       </div>
                     </td>
                     <td className="px-4 py-2">{playlist.name}</td>
-                    <td className="px-4 py-2">
-                      <div className={`${platform.backGroundColor} rounded-lg px-3 py-1.5 text-center w-fit`}>
+                    <td className="px-4 py-2 text-center">
+                      <div className={`${platform.mainColor} rounded-lg w-fit inline-block font-bold`}>
                         {platform.name}
                       </div>
                     </td>
