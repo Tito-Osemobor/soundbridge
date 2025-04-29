@@ -1,11 +1,11 @@
-import {APIError, NotFoundError} from "../../utils/error.js";
-import {findUserByPlatformUserId, updateAccessToken} from "../db.js";
+import {APIError, NotFoundError} from "../utils/error.js";
+import {findUserByPlatformUserId, prisma, updateAccessToken} from "./db.js";
 import jwt from "jsonwebtoken";
-import {JWT_SECRET} from "../../config/applicationConfig.js";
+import {JWT_SECRET} from "../config/applicationConfig.js";
 
-export const generateOAuthStateToken = ({ userId, platform }, expiresIn = "10m") => {
+export const generateOAuthStateToken = ({ userId, platformId }, expiresIn = "10m") => {
   return jwt.sign(
-    { userId, platform },
+    { userId, platformId },
     JWT_SECRET,
     { expiresIn }
   );
@@ -47,23 +47,23 @@ export const exchangeCodeForToken = async ({tokenUrl, code, clientId, clientSecr
 
 export const getValidAccessToken = async ({
   userId,
-  platform,
+  platformId,
   platformUserId,
   refreshConfig,
 }) => {
-  const userAuth = await findUserByPlatformUserId(userId, platform, platformUserId);
+  const userAuth = await findUserByPlatformUserId(userId, platformId, platformUserId);
   if (!userAuth) throw new NotFoundError("User not found");
 
   const tokenExpirationTime = new Date(userAuth.updatedAt).getTime() + userAuth.expiresIn * 1000;
   const currentTime = Date.now();
 
   if (currentTime >= tokenExpirationTime) {
-    console.log(`🔄 Access token expired for ${platformUserId} on ${platform}, refreshing...`);
+    console.log(`🔄 Access token expired for ${platformUserId} on ${platformId}, refreshing...`);
 
     console.log(`refreshConfigClientId, ${ refreshConfig.clientId }`)
     return await refreshAccessToken({
       userId,
-      platform,
+      platformId,
       platformUserId,
       refreshToken: userAuth.refreshToken,
       clientId: refreshConfig.clientId,
@@ -72,13 +72,13 @@ export const getValidAccessToken = async ({
     });
   }
 
-  console.log(`✅ Using existing access token for ${platformUserId} on ${platform}`);
+  console.log(`✅ Using existing access token for ${platformUserId} on ${platformId}`);
   return userAuth.accessToken;
 };
 
 export const refreshAccessToken = async ({
   userId,
-  platform,
+  platformId,
   platformUserId,
   refreshToken,
   clientId,
@@ -104,13 +104,25 @@ export const refreshAccessToken = async ({
 
   const data = await response.json();
   if (data.error) {
-    throw new APIError(`${platform} Token Refresh Error: ${data.error}`, 500);
+    throw new APIError(`${platformId} Token Refresh Error: ${data.error}`, 500);
   }
 
   const { access_token: newAccessToken, expires_in: newExpiresIn } = data;
 
-  await updateAccessToken(userId, platformUserId, platform, newAccessToken, newExpiresIn);
-  console.log(`🔄  Successfully refreshed ${platform} access token.`);
+  await updateAccessToken(userId, platformUserId, platformId, newAccessToken, newExpiresIn);
+  console.log(`🔄  Successfully refreshed ${platformId} access token.`);
 
   return newAccessToken;
 };
+
+export const handleOAuthDisconnect = async (userId, platformId, platformUserId) => {
+  const deleteResult = await prisma.userAuth.delete({
+    where: {
+      userId_platformUserId_platformId: {
+        userId,
+        platformId: platformId,
+        platformUserId: platformUserId,
+      }
+    }
+  });
+}

@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
     LOGOUT: "/auth/logout",
     ME: "/auth/me",
   },
-  PLAYLIST: {
-
+  PLATFORM: {
+    PLAYLISTS: "/api/playlists",
   }
 };

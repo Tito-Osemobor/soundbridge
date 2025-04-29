@@ -9,7 +9,7 @@ import {
   YOUTUBE_TOKEN_URL
 } from '../../../config/youtubeConfig.js';
 import {Platform} from '@prisma/client';
-import {buildOAuthUrl, exchangeCodeForToken} from '../../auth/oauthService.js';
+import {buildOAuthUrl, exchangeCodeForToken} from '../../oauthService.js';
 import {fetchYoutubeMusicProfile} from './youtubeService.js';
 
 export const getYoutubeMusicOAuthUrl = (state) => buildOAuthUrl({

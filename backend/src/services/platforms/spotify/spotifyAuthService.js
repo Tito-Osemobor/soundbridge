@@ -9,7 +9,7 @@ import {
 } from '../../../config/spotifyConfig.js';
 import {APIError} from '../../../utils/error.js';
 import {Platform} from '@prisma/client';
-import {buildOAuthUrl, exchangeCodeForToken} from '../../auth/oauthService.js';
+import {buildOAuthUrl, exchangeCodeForToken} from '../../oauthService.js';
 import {fetchSpotifyProfile} from './spotifyService.js';
 
 export const getSpotifyOAuthUrl = (state) => buildOAuthUrl({

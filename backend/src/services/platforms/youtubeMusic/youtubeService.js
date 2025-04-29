@@ -9,7 +9,7 @@ import {
 } from '../../../config/youtubeConfig.js';
 import {APIError, BadRequestError, UnauthorizedError} from '../../../utils/error.js';
 
-import {getValidAccessToken} from '../../auth/oauthService.js';
+import {getValidAccessToken} from '../../oauthService.js';
 
 const getYoutubeMusicAccessToken = async (userId, platformUserId) => {
   return await getValidAccessToken({

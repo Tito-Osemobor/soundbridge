@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import {prisma} from "../db.js";
-import {JWT_SECRET, NODE_ENV} from "../../config/applicationConfig.js";
+import {prisma} from "./db.js";
+import {JWT_SECRET, NODE_ENV} from "../config/applicationConfig.js";
 
 export const generateToken = (userId, expiresIn = "7d") => {
   return jwt.sign(
