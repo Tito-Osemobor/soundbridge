@@ -46,6 +46,7 @@ const PlaylistTable = ({platformIds = [], searchQuery = "", onSelect}) => {
             <th className="px-4 py-2 text-left">Title</th>
             <th className="px-4 py-2 text-left">Service</th>
             <th className="px-4 py-2 text-center">Tracks</th>
+            <th className="px-4 py-2 text-center">Creator</th>
           </tr>
           </thead>
           <tbody className={``}>
@@ -79,6 +80,9 @@ const PlaylistTable = ({platformIds = [], searchQuery = "", onSelect}) => {
                     </td>
                     <td className="px-4 py-2 text-center">
                       {playlist.trackCount} {playlist.trackCount <= 1 ? "track" : "tracks"}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      {playlist.creator}
                     </td>
                   </tr>
                 );
