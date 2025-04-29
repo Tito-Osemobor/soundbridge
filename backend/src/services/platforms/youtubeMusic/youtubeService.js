@@ -1,5 +1,4 @@
 import {Platform} from '@prisma/client';
-
 import {
   YOUTUBE_API_BASE_URL,
   YOUTUBE_CLIENT_ID,
@@ -7,7 +6,6 @@ import {
   YOUTUBE_TOKEN_URL
 } from '../../../config/youtubeConfig.js';
 import {APIError, BadRequestError, UnauthorizedError} from '../../../utils/error.js';
-
 import {getValidAccessToken} from '../../oauthService.js';
 
 const getYoutubeMusicAccessToken = async (userId, platformUserId) => {
@@ -34,6 +32,29 @@ export const fetchYoutubeMusicProfile = async (accessToken) => {
   }
   return userProfile.items[0];
 }
+
+export const fetchYoutubeMusicPlaylists = async (userId, platformUserId) => {
+  const accessToken = await getYoutubeMusicAccessToken(userId, platformUserId);
+  if (!accessToken) {
+    throw new UnauthorizedError("Failed to retrieve a valid access token");
+  }
+
+  const response = await fetch(`${YOUTUBE_API_BASE_URL}/playlists?part=snippet,contentDetails&mine=true`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  if (!response.ok) {
+    throw new APIError(`YouTube API error: ${response.statusText}`, response.status);
+  }
+
+  const data = await response.json();
+  return data.items.map(playlist => ({
+    id: playlist.id,
+    name: playlist.snippet.title,
+    trackCount: playlist.contentDetails.itemCount,
+    creator: playlist.snippet.channelTitle,
+  }));
+};
 
 export const createYouTubePlaylist = async (userId, platformUserId, playlistName) => {
   if (!platformUserId) {

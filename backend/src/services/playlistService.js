@@ -1,7 +1,8 @@
 import {Platform} from "@prisma/client";
-import {fetchSpotifyPlaylists} from "./platforms/spotify/spotifyService.js";
-import {findPlatformUserId} from "./db.js";
 import {BadRequestError, NotFoundError} from "../utils/error.js";
+import {findPlatformUserId} from "./db.js";
+import {fetchSpotifyPlaylists} from "./platforms/spotify/spotifyService.js";
+import {fetchYoutubeMusicPlaylists} from "./platforms/youtubeMusic/youtubeService.js";
 
 export const getPlaylistsForPlatform = async ({userId, platformId}) => {
   const platformUserId = await findPlatformUserId(userId, platformId);
@@ -12,8 +13,8 @@ export const getPlaylistsForPlatform = async ({userId, platformId}) => {
   switch (platformId) {
     case Platform.SPOTIFY:
       return fetchSpotifyPlaylists(userId, platformUserId);
-    // case Platform.YOUTUBE_MUSIC:
-    //   return fetchYouTubePlaylists(userId, platformUserId);
+    case Platform.YOUTUBE_MUSIC:
+      return fetchYoutubeMusicPlaylists(userId, platformUserId);
     default:
       throw new BadRequestError(`Unsupported platform: ${platformId}`);
   }
