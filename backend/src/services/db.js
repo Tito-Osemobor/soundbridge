@@ -1,8 +1,8 @@
 import {PrismaClient} from '@prisma/client';
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
-const saveUserAuth = async (userId, platformId, platformUserId, accessToken, refreshToken, expiresIn) => {
+export const saveUserAuth = async (userId, platformId, platformUserId, accessToken, refreshToken, expiresIn) => {
   try {
     await prisma.userAuth.upsert({
       where: {
@@ -31,7 +31,7 @@ const saveUserAuth = async (userId, platformId, platformUserId, accessToken, ref
   }
 };
 
-const findUserByPlatformUserId = async (userId, platformId, platformUserId) => {
+export const findUserByPlatformUserId = async (userId, platformId, platformUserId) => {
   return prisma.userAuth.findUnique({
     where: {
       userId_platformUserId_platformId: {
@@ -43,7 +43,7 @@ const findUserByPlatformUserId = async (userId, platformId, platformUserId) => {
   });
 };
 
-const updateAccessToken = async (userId, platformUserId, platformId, newAccessToken, newExpiresIn) => {
+export const updateAccessToken = async (userId, platformUserId, platformId, newAccessToken, newExpiresIn) => {
   try {
     await prisma.userAuth.update({
       where: {
@@ -65,5 +65,16 @@ const updateAccessToken = async (userId, platformUserId, platformId, newAccessTo
   }
 };
 
+export const findPlatformUserId = async (userId, platformId) => {
+  const userAuth = await prisma.userAuth.findFirst({
+    where: {
+      userId,
+      platformId
+    },
+    select: {
+      platformUserId: true
+    }
+  });
 
-export {prisma, saveUserAuth, findUserByPlatformUserId, updateAccessToken};
+  return userAuth?.platformUserId;
+};
