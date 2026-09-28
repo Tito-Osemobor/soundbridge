@@ -1,17 +1,18 @@
 import Link from 'next/link';
+import { setupUrl } from '@/features/shared/links';
 
 export default function Home() {
   return <div className="app-shell">
     <header className="site-header">
       <Link href="/" className="brand">Sound<span>Bridge</span></Link>
-      <nav className="header-actions"><Link href="/demo" className="header-link">Explore demo</Link><a className="nav-cta" href="https://github.com/Tito-Osemobor/soundbridge#run-real-transfers">Run it yourself ↗</a></nav>
+      <nav className="header-actions"><Link href="/demo" className="header-link">Explore demo</Link><a className="nav-cta" href={setupUrl}>Run it yourself ↗</a></nav>
     </header>
     <main className="home-main">
       <div className="hero">
         <p className="eyebrow">A BETTER WAY TO MOVE YOUR MUSIC</p>
         <h1>Your playlists<br />belong <em>everywhere.</em></h1>
         <p>Bring the songs you love from Spotify, YouTube Music, or Apple Music to a new home. Review the tricky matches. Keep your originals.</p>
-        <div className="hero-actions"><Link href="/demo" className="primary-button">Try the interactive demo <span>↗</span></Link><a href="https://github.com/Tito-Osemobor/soundbridge#run-real-transfers" className="secondary-button">Set up real transfers</a></div>
+        <div className="hero-actions"><Link href="/demo" className="primary-button">Try the interactive demo <span>↗</span></Link><a href={setupUrl} className="secondary-button">Set up real transfers</a></div>
         <small>The public demo uses sample music. Real transfers run locally with your own provider credentials.</small>
       </div>
       <div className="feature-strip">

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/features/shared/api';
+import { setupUrl } from '@/features/shared/links';
 import { connectApple } from '@/features/connections/apple';
 import { demo, platforms } from '@/features/demo/data';
 
@@ -177,7 +178,7 @@ export default function Workspace({ mode = 'demo' }) {
       <Link href="/" className="brand">Sound<span>Bridge</span></Link>
       <div className="header-actions">
         <span className="mode-pill">{isDemo ? 'Interactive demo' : 'Local workspace'}</span>
-        <Link href={isDemo ? (process.env.NEXT_PUBLIC_DEMO_ONLY === '1' ? 'https://github.com/Tito-Osemobor/soundbridge#run-real-transfers' : '/hub') : '/demo'} className="header-link">{isDemo ? 'Real setup' : 'Try demo'}</Link>
+        <Link href={isDemo ? (process.env.NEXT_PUBLIC_DEMO_ONLY === '1' ? setupUrl : '/hub') : '/demo'} className="header-link">{isDemo ? 'Real setup' : 'Try demo'}</Link>
       </div>
     </header>
     <main className="workspace">
