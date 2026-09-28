@@ -44,7 +44,7 @@ Create the provider apps before connecting accounts:
 docker compose up --build
 ```
 
-Open [http://127.0.0.1:3000/hub](http://127.0.0.1:3000/hub). Docker publishes only the web port on loopback; the API and PostgreSQL stay on the internal Compose network. There is no SoundBridge account login. **Do not expose this installation to the public internet without a separate access gate and HTTPS.**
+Open [http://127.0.0.1:3000/hub](http://127.0.0.1:3000/hub). Docker publishes the web and PostgreSQL ports on loopback only; the API stays on the internal Compose network. There is no SoundBridge account login. **Do not expose this installation to the public internet without a separate access gate and HTTPS.**
 
 To back up the database:
 
@@ -65,6 +65,10 @@ Save `ENCRYPTION_KEY` securely with the backup. Provider tokens are encrypted in
 ## Development
 
 Use Node.js 22 or later. The frontend proxies `/api` to the backend in real mode, so the browser uses one origin. The backend binds to `127.0.0.1` outside Docker.
+
+For **backend development on your host**, keep the Compose database running with `docker compose up -d db`. In `backend/.env`, set `DATABASE_URL` to `postgresql://soundbridge:<POSTGRES_PASSWORD>@127.0.0.1:5432/soundbridge`, using the password from the root `.env`. The database name is `soundbridge`. Then run `npm run build`, `npx prisma migrate deploy`, and `npm run dev` from `backend/`. The database port is available only on your machine.
+
+The Docker web container still talks to the Docker API container. To test edits to the host backend through the browser, run `docker compose stop web api`, then start `npm run dev` in both `backend/` and `frontend/`. The host Next.js server on port 3000 proxies `/api` to the host backend on port 8080. Restart the packaged app later with `docker compose up -d`.
 
 ```sh
 cd backend
