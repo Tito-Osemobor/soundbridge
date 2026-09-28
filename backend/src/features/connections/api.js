@@ -39,13 +39,22 @@ connections.get('/callback/:platform', route(async (req, res) => {
     !timingSafeEqual(Buffer.from(expected), Buffer.from(received))) {
     return res.redirect('/hub?connection=state');
   }
+  let step = 'exchange';
   try {
     const adapter = provider(id);
     const tokens = await adapter.exchange(req.query.code);
+    step = 'profile';
     const platformUserId = await adapter.profile(tokens.access_token);
+    step = 'save';
     await saveConnection(id, platformUserId, tokens);
     return res.redirect('/hub?connection=success');
-  } catch {
+  } catch (error) {
+    console.error('OAuth callback failed', {
+      platform: id,
+      step,
+      code: error.code || 'UNEXPECTED',
+      status: error.providerStatus || error.status || null,
+    });
     return res.redirect('/hub?connection=failed');
   }
 }));

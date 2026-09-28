@@ -19,7 +19,9 @@ export async function providerFetch(url, options = {}, attempts = 2) {
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const code = response.status === 429 ? 'RATE_LIMITED' : response.status === 401 ? 'RECONNECT_REQUIRED' : 'PROVIDER_FAILED';
-    throw new AppError(code, `${code}: ${response.status}`, response.status === 429 ? 429 : 502);
+    const error = new AppError(code, `${code}: ${response.status}`, response.status === 429 ? 429 : 502);
+    error.providerStatus = response.status;
+    throw error;
   }
   return body;
 }

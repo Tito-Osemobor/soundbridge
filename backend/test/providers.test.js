@@ -3,6 +3,21 @@ import assert from 'node:assert/strict';
 import { spotify } from '../src/providers/spotify.js';
 import { youtube } from '../src/providers/youtube.js';
 import { providerFetch } from '../src/http.js';
+import { config } from '../src/config.js';
+
+test('Spotify authorization requests the profile scope used during connection', () => {
+  const previous = { ...config.spotify };
+  try {
+    config.spotify.id = 'test-client';
+    config.spotify.redirect = 'http://127.0.0.1:3000/api/connections/callback/SPOTIFY';
+    const scopes = new URL(spotify.oauth()).searchParams.get('scope').split(' ');
+    assert.ok(scopes.includes('user-read-private'));
+    assert.ok(scopes.includes('playlist-read-private'));
+    assert.ok(scopes.includes('playlist-modify-private'));
+  } finally {
+    Object.assign(config.spotify, previous);
+  }
+});
 
 test('Spotify playlists follow pagination', async () => {
   const original = globalThis.fetch;

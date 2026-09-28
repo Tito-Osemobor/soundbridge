@@ -12,7 +12,7 @@ export const spotify = {
       response_type: 'code',
       client_id: requireConfig(config.spotify.id, 'SPOTIFY_CLIENT_ID'),
       redirect_uri: requireConfig(config.spotify.redirect, 'SPOTIFY_REDIRECT_URI'),
-      scope: 'playlist-read-private playlist-read-collaborative playlist-modify-private',
+      scope: 'playlist-read-private playlist-read-collaborative playlist-modify-private user-read-private',
     }).toString();
     return url;
   },
