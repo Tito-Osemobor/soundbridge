@@ -6,26 +6,29 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.6.1",
-    "axios": "^1.8.2",
-    "motion": "^12.5.0",
-    "next": "^15.2.4",
-    "prop-types": "^15.8.1",
+    "next": "^15.5.26",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0",
-    "react-redux": "^9.2.0",
-    "react-toastify": "^11.0.5"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "eslint": "^9",
-    "eslint-config-next": "15.2.1",
-    "mini-css-extract-plugin": "^2.9.2",
-    "tailwindcss": "^4"
+    "eslint-config-next": "^15.5.26",
+    "jsdom": "^26.1.0",
+    "tailwindcss": "^4",
+    "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "postcss": "8.5.28",
+    "nanoid": "3.3.18"
   }
 }
