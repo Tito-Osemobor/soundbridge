@@ -22,6 +22,12 @@ For Vercel, import this repository with **Root Directory** set to `frontend` and
 
 You need Docker Compose, Spotify and Google OAuth applications, and accounts allowed to use their APIs. Apple Music additionally needs an Apple Developer Program membership, a MusicKit media key, and an Apple Music subscriber account.
 
+Create the provider apps before connecting accounts:
+
+- **Spotify:** Create an app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard), add your Spotify account to its development-mode allowlist, and copy its client ID and secret. Register the loopback redirect below exactly; Spotify does not accept `localhost` for this callback.
+- **Google/YouTube:** Enable **YouTube Data API v3** in a Google Cloud project, configure the OAuth consent screen, add your Google account as a test user if the app is in Testing, and create an OAuth client of type **Web application**. Copy its client ID and secret and register the redirect below exactly. The app requests `youtube.force-ssl` so it can read playlists and add videos.
+- **Apple Music:** In Apple Developer, create a [Media ID and Media Services private key](https://developer.apple.com/help/account/capabilities/create-a-media-identifier-and-private-key). Copy the Team ID and Key ID and keep the downloaded `.p8` file private. A subscriber account must approve MusicKit access in the browser. Apple is optional for the Spotify ↔ YouTube setup.
+
 1. Copy `.env.example` to `.env` and set a long random `POSTGRES_PASSWORD`.
 2. Copy `backend/.env.example` to `backend/.env`. Generate `ENCRYPTION_KEY` with `openssl rand -base64 32`; keep this key and your database backup together. Losing the key makes saved provider tokens unreadable.
 3. Register these exact callback URLs in your developer dashboards:
