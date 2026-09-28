@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=soundbridge
+      - POSTGRES_USER=soundbridge
+      - POSTGRES_PASSWORD
+    volumes:
+      - soundbridge_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soundbridge"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      DATABASE_URL: postgres://soundbridge:${POSTGRES_PASSWORD}@db:5432/soundbridge
+      WEB_ORIGIN: http://127.0.0.1:3000
+      SPOTIFY_REDIRECT_URI: http://127.0.0.1:3000/api/connections/callback/SPOTIFY
+      YOUTUBE_REDIRECT_URI: http://127.0.0.1:3000/api/connections/callback/YOUTUBE_MUSIC
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    build: ./frontend
+    environment:
+      BACKEND_INTERNAL_URL: http://api:8080
+      NEXT_PUBLIC_DEMO_ONLY: "0"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  soundbridge_db:
