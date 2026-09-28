@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createWorker } from '../src/features/transfer/work.js';
 
-function fixture() {
+function fixture(sourceId = 'SPOTIFY', destinationId = 'YOUTUBE_MUSIC') {
   let job = {
-    id: 'job-1', source: 'SPOTIFY', destination: 'YOUTUBE_MUSIC',
+    id: 'job-1', source: sourceId, destination: destinationId,
     sourcePlaylistId: 'playlist-1', sourceName: 'Favorites', status: 'matching',
     destinationPlaylistId: null, items: [], error: null,
   };
@@ -33,7 +33,7 @@ function fixture() {
   };
   const worker = () => createWorker({
     store, tokenFor: async () => 'token',
-    resolveProvider: id => id === 'SPOTIFY' ? source : destination,
+    resolveProvider: id => id === sourceId ? source : destination,
   });
   return { worker, get job() { return job; }, added };
 }
@@ -59,5 +59,17 @@ test('restart recovery resumes a running transfer without duplicate writes', asy
   await state.worker().runWrite('job-1');
   state.job.status = 'running';
   await state.worker().recoverTransfers();
+  assert.deepEqual(state.added, ['Golden Hour', 'Redbone']);
+});
+
+test('the reverse YouTube to Spotify direction uses the same ordered review and write flow', async () => {
+  const state = fixture('YOUTUBE_MUSIC', 'SPOTIFY');
+  await state.worker().runMatch('job-1');
+  assert.equal(state.job.source, 'YOUTUBE_MUSIC');
+  assert.equal(state.job.destination, 'SPOTIFY');
+  assert.deepEqual(state.job.items.map(item => item.selectedId), ['Golden Hour', 'Redbone']);
+  await state.worker().runWrite('job-1');
+  await state.worker().runWrite('job-1');
+  assert.equal(state.job.status, 'completed');
   assert.deepEqual(state.added, ['Golden Hour', 'Redbone']);
 });
